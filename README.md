@@ -27,13 +27,13 @@ idbKeyval.set('hello', 'world')
 idbKeyval.get('hello').then(val => console.log(val));
 ```
 
-### Removing
+### Removing:
 
 ```js
 idbKeyval.remove('hello');
 ```
 
-### Clearing
+### Clearing:
 
 ```js
 idbKeyval.clear();
