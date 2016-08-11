@@ -2,7 +2,7 @@
 
 This is a super-simple-small promise-based keyval store implemented with IndexedDB, largely based on [async-storage by Mozilla](https://github.com/mozilla-b2g/gaia/blob/master/shared/js/async_storage.js).
 
-If you're looking for a more general-purpose promise-based IDB, see [IDB on NPM](https://www.npmjs.com/package/idb).
+If you're looking for a more general-purpose promise-based IDB, try [IDB on NPM](https://www.npmjs.com/package/idb). If you want to support older browsers with broken/absent IDB implementations, try [localForage](https://github.com/localForage/localForage). 
 
 ## Usage
 
