@@ -6,10 +6,11 @@ If you're looking for a more general-purpose promise-based IDB, try [IDB on NPM]
 
 ## Usage
 
-### Setting:
+### set:
 
 ```js
 idbKeyval.set('hello', 'world');
+idbKeyval.set('foo', 'bar');
 ```
 
 Since this is IDB-backed, you can also store numbers, arrays, objects and blobs. All methods return promises:
@@ -20,20 +21,27 @@ idbKeyval.set('hello', 'world')
   .catch(err => console.log('It failed!', err));
 ```
 
-### Getting:
+### get:
 
 ```js
 // logs: "world"
 idbKeyval.get('hello').then(val => console.log(val));
 ```
 
-### Deleting:
+### keys:
+
+```js
+// logs: ["hello", "foo"]
+idbKeyval.get('hello').then(keys => console.log(keys));
+```
+
+### delete:
 
 ```js
 idbKeyval.delete('hello');
 ```
 
-### Clearing:
+### clear:
 
 ```js
 idbKeyval.clear();

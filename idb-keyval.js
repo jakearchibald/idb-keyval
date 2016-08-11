@@ -62,6 +62,20 @@
       return withStore('readwrite', function(store) {
         store.clear();
       });
+    },
+    keys: function() {
+      var keys = [];
+      return withStore('readonly', function(store) {
+        // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
+        // And openKeyCursor isn't supported by Safari.
+        (store.openKeyCursor || store.openCursor).call(store).onsuccess = function() {
+          if (!this.result) return;
+          keys.push(this.result.key);
+          this.result.continue();
+        };  
+      }).then(function() {
+        return keys;
+      });
     }
   };
 
