@@ -13,7 +13,9 @@ idbKeyval.set('hello', 'world');
 idbKeyval.set('foo', 'bar');
 ```
 
-Since this is IDB-backed, you can also store numbers, arrays, objects and blobs. All methods return promises:
+Since this is IDB-backed, you can store anything structured-clonable (numbers, arrays, objects, dates, blobs etc).
+
+All methods return promises:
 
 ```js
 idbKeyval.set('hello', 'world')
