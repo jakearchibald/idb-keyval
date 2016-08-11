@@ -34,7 +34,7 @@ idbKeyval.get('hello').then(val => console.log(val));
 
 ```js
 // logs: ["hello", "foo"]
-idbKeyval.get('hello').then(keys => console.log(keys));
+idbKeyval.keys().then(keys => console.log(keys));
 ```
 
 ### delete:
