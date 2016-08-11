@@ -27,10 +27,10 @@ idbKeyval.set('hello', 'world')
 idbKeyval.get('hello').then(val => console.log(val));
 ```
 
-### Removing:
+### Deleting:
 
 ```js
-idbKeyval.remove('hello');
+idbKeyval.delete('hello');
 ```
 
 ### Clearing:

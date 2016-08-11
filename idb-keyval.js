@@ -53,7 +53,7 @@
         store.put(value, key);
       });
     },
-    remove: function(key) {
+    delete: function(key) {
       return withStore('readwrite', function(store) {
         store.delete(key);
       });
