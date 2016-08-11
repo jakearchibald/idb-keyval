@@ -4,7 +4,7 @@
   "description": "A super-simple-small keyval store built on top of IndexedDB",
   "main": "idb-keyval.js",
   "scripts": {
-    "build": "uglifyjs idb-keyval.js --output dist/idb-keyval-min.js"
+    "build": "uglifyjs idb-keyval.js --screw-ie8 -mc --output dist/idb-keyval-min.js"
   },
   "repository": {
     "type": "git",
