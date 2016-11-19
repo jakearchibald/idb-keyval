@@ -3,6 +3,7 @@
   "version": "2.1.2",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
   "main": "idb-keyval.js",
+  "typings": "typings.d.ts",
   "scripts": {
     "build": "uglifyjs idb-keyval.js --screw-ie8 -mc --output dist/idb-keyval-min.js"
   },
