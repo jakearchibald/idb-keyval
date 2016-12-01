@@ -32,6 +32,8 @@ idbKeyval.set('hello', 'world')
 idbKeyval.get('hello').then(val => console.log(val));
 ```
 
+If there is no 'hello' key, then `val` will be `undefined`.
+
 ### keys:
 
 ```js
