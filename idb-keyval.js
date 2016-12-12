@@ -82,7 +82,7 @@
   if (typeof module != 'undefined' && module.exports) {
     module.exports = idbKeyval;
   } else if (typeof define === 'function' && define.amd) {
-    define('idbKeyval', [], function(){
+    define('idbKeyval', [], function() {
       return idbKeyval;
     });
   } else {
