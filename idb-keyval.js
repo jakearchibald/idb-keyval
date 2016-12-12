@@ -6,11 +6,11 @@
     if (!db) {
       db = new Promise(function(resolve, reject) {
         var openreq = indexedDB.open('keyval-store', 1);
-        
+
         openreq.onerror = function() {
           reject(openreq.error);
         };
-        
+
         openreq.onupgradeneeded = function() {
           // First time setup: create an empty object store
           openreq.result.createObjectStore('keyval');
@@ -72,7 +72,7 @@
           if (!this.result) return;
           keys.push(this.result.key);
           this.result.continue();
-        };  
+        };
       }).then(function() {
         return keys;
       });
@@ -81,6 +81,10 @@
 
   if (typeof module != 'undefined' && module.exports) {
     module.exports = idbKeyval;
+  } else if (typeof define === 'function' && define.amd) {
+    define('idbKeyval', [], function(){
+      return idbKeyval;
+    });
   } else {
     self.idbKeyval = idbKeyval;
   }
