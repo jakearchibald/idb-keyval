@@ -2,9 +2,11 @@
   "name": "idb-keyval",
   "version": "2.3.0",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
-  "main": "idb-keyval.js",
+  "main": "dist/idb-keyval-cjs.js",
+  "module": "idb-keyval.js",
   "typings": "typings.d.ts",
   "scripts": {
+    "postinstall": "npx rollup -c",
     "build": "uglifyjs idb-keyval.js --screw-ie8 -mc --output dist/idb-keyval-min.js"
   },
   "repository": {
@@ -21,12 +23,16 @@
     "promise"
   ],
   "author": "Jake Archibald",
+  "contributors": [
+    "Benny Powers"
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/jakearchibald/idb-keyval/issues"
   },
   "homepage": "https://github.com/jakearchibald/idb-keyval#readme",
   "devDependencies": {
+    "rollup": "^0.56.5",
     "uglify-js": "^2.7.0"
   }
 }
