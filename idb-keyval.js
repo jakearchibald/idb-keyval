@@ -77,4 +77,4 @@ var idbKeyval = {
   }
 };
 
-export default idbKeyval
+export default idbKeyval;

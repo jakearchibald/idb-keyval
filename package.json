@@ -6,8 +6,7 @@
   "module": "idb-keyval.js",
   "typings": "typings.d.ts",
   "scripts": {
-    "postinstall": "npx rollup -c",
-    "build": "uglifyjs idb-keyval.js --screw-ie8 -mc --output dist/idb-keyval-min.js"
+    "build": "npx rollup -c"
   },
   "repository": {
     "type": "git",
@@ -33,6 +32,7 @@
   "homepage": "https://github.com/jakearchibald/idb-keyval#readme",
   "devDependencies": {
     "rollup": "^0.56.5",
+    "rollup-plugin-uglify": "^3.0.0",
     "uglify-js": "^2.7.0"
   }
 }
