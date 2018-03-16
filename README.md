@@ -4,7 +4,7 @@ This is a super-simple-small promise-based keyval store implemented with Indexed
 
 [localForage](https://github.com/localForage/localForage) offers similar functionality, but supports older browsers with broken/absent IDB implementations. Because of that, it's 6k, whereas idb-keyval is less than 500 bytes. Pick whichever works best for you!
 
-This is only a keyval store. If you need to do more complex things like iteration & indexing, check out [IDB on NPM](https://www.npmjs.com/package/idb) (a little heavier at 1.7k). The first example in its README is how to recreate this library. 
+This is only a keyval store. If you need to do more complex things like iteration & indexing, check out [IDB on NPM](https://www.npmjs.com/package/idb) (a little heavier at 1.7k). The first example in its README is how to recreate this library.
 
 ## Usage
 
@@ -54,3 +54,23 @@ idbKeyval.clear();
 ```
 
 That's it!
+
+## Installing
+
+### Via npm
+
+```sh
+npm install idb-keyval
+```
+
+Now you can require/import `idb-keyval`:
+
+```js
+const idbKeyval = require('idb-keyval');
+```
+
+### Via <script>
+
+`idb-keyval.js` is a valid JS module.
+
+`dist/idb-keyval.iffe.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.

@@ -1,3 +1,6 @@
+var idbKeyval = (function () {
+'use strict';
+
 var db;
 
 function getDB() {
@@ -37,7 +40,7 @@ function withStore(type, callback) {
   });
 }
 
-export default {
+var idbKeyval = {
   get: function(key) {
     var req;
     return withStore('readonly', function(store) {
@@ -76,3 +79,7 @@ export default {
     });
   }
 };
+
+return idbKeyval;
+
+}());

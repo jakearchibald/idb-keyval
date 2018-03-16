@@ -1,1 +1,82 @@
-"use strict";var db;function getDB(){return db||(db=new Promise(function(e,t){var n=indexedDB.open("keyval-store",1);n.onerror=function(){t(n.error)},n.onupgradeneeded=function(){n.result.createObjectStore("keyval")},n.onsuccess=function(){e(n.result)}})),db}function withStore(e,t){return getDB().then(function(n){return new Promise(function(r,o){var u=n.transaction("keyval",e);u.oncomplete=function(){r()},u.onerror=function(){o(u.error)},t(u.objectStore("keyval"))})})}var idbKeyval={get:function(e){var t;return withStore("readonly",function(n){t=n.get(e)}).then(function(){return t.result})},set:function(e,t){return withStore("readwrite",function(n){n.put(t,e)})},delete:function(e){return withStore("readwrite",function(t){t.delete(e)})},clear:function(){return withStore("readwrite",function(e){e.clear()})},keys:function(){var e=[];return withStore("readonly",function(t){(t.openKeyCursor||t.openCursor).call(t).onsuccess=function(){this.result&&(e.push(this.result.key),this.result.continue())}}).then(function(){return e})}};module.exports=idbKeyval;
+'use strict';
+
+var db;
+
+function getDB() {
+  if (!db) {
+    db = new Promise(function(resolve, reject) {
+      var openreq = indexedDB.open('keyval-store', 1);
+
+      openreq.onerror = function() {
+        reject(openreq.error);
+      };
+
+      openreq.onupgradeneeded = function() {
+        // First time setup: create an empty object store
+        openreq.result.createObjectStore('keyval');
+      };
+
+      openreq.onsuccess = function() {
+        resolve(openreq.result);
+      };
+    });
+  }
+  return db;
+}
+
+function withStore(type, callback) {
+  return getDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var transaction = db.transaction('keyval', type);
+      transaction.oncomplete = function() {
+        resolve();
+      };
+      transaction.onerror = function() {
+        reject(transaction.error);
+      };
+      callback(transaction.objectStore('keyval'));
+    });
+  });
+}
+
+var idbKeyval = {
+  get: function(key) {
+    var req;
+    return withStore('readonly', function(store) {
+      req = store.get(key);
+    }).then(function() {
+      return req.result;
+    });
+  },
+  set: function(key, value) {
+    return withStore('readwrite', function(store) {
+      store.put(value, key);
+    });
+  },
+  delete: function(key) {
+    return withStore('readwrite', function(store) {
+      store.delete(key);
+    });
+  },
+  clear: function() {
+    return withStore('readwrite', function(store) {
+      store.clear();
+    });
+  },
+  keys: function() {
+    var keys = [];
+    return withStore('readonly', function(store) {
+      // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
+      // And openKeyCursor isn't supported by Safari.
+      (store.openKeyCursor || store.openCursor).call(store).onsuccess = function() {
+        if (!this.result) return;
+        keys.push(this.result.key);
+        this.result.continue();
+      };
+    }).then(function() {
+      return keys;
+    });
+  }
+};
+
+module.exports = idbKeyval;
