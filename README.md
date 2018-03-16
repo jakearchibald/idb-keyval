@@ -69,7 +69,7 @@ Now you can require/import `idb-keyval`:
 const idbKeyval = require('idb-keyval');
 ```
 
-### Via <script>
+### Via `<script>`
 
 `idb-keyval.js` is a valid JS module.
 
