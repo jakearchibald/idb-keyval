@@ -17,5 +17,5 @@ declare module 'idb-keyval' {
   }
 
   const idbKeyVal: IDBKeyVal<string>;
-  export = idbKeyVal;
+  export default idbKeyVal;
 }
