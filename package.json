@@ -1,6 +1,6 @@
 {
   "name": "idb-keyval",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
   "main": "idb-keyval.js",
   "typings": "typings.d.ts",

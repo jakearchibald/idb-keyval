@@ -31,7 +31,7 @@
         transaction.oncomplete = function() {
           resolve();
         };
-        transaction.onerror = function() {
+        transaction.onabort = transaction.onerror = function() {
           reject(transaction.error);
         };
         callback(transaction.objectStore('keyval'));

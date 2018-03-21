@@ -57,23 +57,3 @@ idbKeyval.clear();
 ```
 
 That's it!
-
-## Installing
-
-### Via npm
-
-```sh
-npm install idb-keyval
-```
-
-Now you can require/import `idb-keyval`:
-
-```js
-const idbKeyval = require('idb-keyval');
-```
-
-### Via `<script>`
-
-`idb-keyval.js` is a valid JS module.
-
-`dist/idb-keyval.iffe.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
