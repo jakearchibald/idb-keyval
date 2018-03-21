@@ -5,7 +5,7 @@
 
 This is a super-simple-small promise-based keyval store implemented with IndexedDB, largely based on [async-storage by Mozilla](https://github.com/mozilla-b2g/gaia/blob/master/shared/js/async_storage.js).
 
-[localForage](https://github.com/localForage/localForage) offers similar functionality, but supports older browsers with broken/absent IDB implementations. Because of that, it's 6k, whereas idb-keyval is less than 500 bytes. Pick whichever works best for you!
+[localForage](https://github.com/localForage/localForage) offers similar functionality, but supports older browsers with broken/absent IDB implementations. Because of that, it's 7.4k, whereas idb-keyval is ~550 bytes. Also, it's tree-shaking friendly, so you'll probably end up using few than  Pick whichever works best for you!
 
 This is only a keyval store. If you need to do more complex things like iteration & indexing, check out [IDB on NPM](https://www.npmjs.com/package/idb) (a little heavier at 1.7k). The first example in its README is how to recreate this library.
 
@@ -14,8 +14,10 @@ This is only a keyval store. If you need to do more complex things like iteratio
 ### set:
 
 ```js
-idbKeyval.set('hello', 'world');
-idbKeyval.set('foo', 'bar');
+import { set } from 'idb-keyval';
+
+set('hello', 'world');
+set('foo', 'bar');
 ```
 
 Since this is IDB-backed, you can store anything structured-clonable (numbers, arrays, objects, dates, blobs etc).
@@ -23,7 +25,9 @@ Since this is IDB-backed, you can store anything structured-clonable (numbers, a
 All methods return promises:
 
 ```js
-idbKeyval.set('hello', 'world')
+import { set } from 'idb-keyval';
+
+set('hello', 'world')
   .then(() => console.log('It worked!'))
   .catch(err => console.log('It failed!', err));
 ```
@@ -31,8 +35,10 @@ idbKeyval.set('hello', 'world')
 ### get:
 
 ```js
+import { get } from 'idb-keyval';
+
 // logs: "world"
-idbKeyval.get('hello').then(val => console.log(val));
+get('hello').then(val => console.log(val));
 ```
 
 If there is no 'hello' key, then `val` will be `undefined`.
@@ -40,27 +46,44 @@ If there is no 'hello' key, then `val` will be `undefined`.
 ### keys:
 
 ```js
+import { keys } from 'idb-keyval';
+
 // logs: ["hello", "foo"]
-idbKeyval.keys().then(keys => console.log(keys));
+keys().then(keys => console.log(keys));
 ```
 
-### delete:
+### del:
 
 ```js
-idbKeyval.delete('hello');
+import { del } from 'idb-keyval';
+
+del('hello');
 ```
 
 ### clear:
 
 ```js
-idbKeyval.clear();
+import { clear } from 'idb-keyval';
+
+clear();
+```
+
+### Custom stores:
+
+By default, the methods above use an IndexedDB database named `keyval-store` and an object store named `keyval`. You can create your own store, and pass it as an additional parameter to any of the above methods:
+
+```js
+import { Store, set } from 'idb-keyval';
+
+const customStore = new Store('custom-db-name', 'custom-store-name');
+set('foo', 'bar', customStore);
 ```
 
 That's it!
 
 ## Installing
 
-### Via npm
+### Via npm + webpack/rollup
 
 ```sh
 npm install idb-keyval
@@ -69,11 +92,10 @@ npm install idb-keyval
 Now you can require/import `idb-keyval`:
 
 ```js
-const idbKeyval = require('idb-keyval');
+import { get, set } from 'idb-keyval';
 ```
 
 ### Via `<script>`
 
-`idb-keyval.js` is a valid JS module.
-
-`dist/idb-keyval.iffe.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
+* `dist/idb-keyval.mjs` is a valid JS module.
+* `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.

@@ -1,7 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 class Store {
     constructor(dbName = 'keyval-store', storeName = 'keyval') {
         this.storeName = storeName;
@@ -65,9 +61,4 @@ function keys(store = getDefaultStore()) {
     }).then(() => keys);
 }
 
-exports.Store = Store;
-exports.get = get;
-exports.set = set;
-exports.del = del;
-exports.clear = clear;
-exports.keys = keys;
+export { Store, get, set, del, clear, keys };
