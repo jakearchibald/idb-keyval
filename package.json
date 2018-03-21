@@ -13,18 +13,18 @@
         "url": "git+https://github.com/jakearchibald/idb-keyval.git"
     },
     "keywords": [
-                 "idb",
-                 "indexeddb",
-                 "store",
-                 "keyval",
-                 "localstorage",
-                 "storage",
-                 "promise"
-                 ],
+        "idb",
+        "indexeddb",
+        "store",
+        "keyval",
+        "localstorage",
+        "storage",
+        "promise"
+    ],
     "author": "Jake Archibald",
     "contributors": [
-                     "Benny Powers"
-                     ],
+        "Benny Powers"
+    ],
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/jakearchibald/idb-keyval/issues"
