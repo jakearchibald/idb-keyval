@@ -1,32 +1,40 @@
 {
-  "name": "idb-keyval",
-  "version": "2.5.0",
-  "description": "A super-simple-small keyval store built on top of IndexedDB",
-  "main": "idb-keyval.js",
-  "typings": "typings.d.ts",
-  "scripts": {
-    "build": "uglifyjs idb-keyval.js --screw-ie8 -mc --output dist/idb-keyval-min.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jakearchibald/idb-keyval.git"
-  },
-  "keywords": [
-    "idb",
-    "indexeddb",
-    "store",
-    "keyval",
-    "localstorage",
-    "storage",
-    "promise"
-  ],
-  "author": "Jake Archibald",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/jakearchibald/idb-keyval/issues"
-  },
-  "homepage": "https://github.com/jakearchibald/idb-keyval#readme",
-  "devDependencies": {
-    "uglify-js": "^2.7.0"
-  }
+    "name": "idb-keyval",
+    "version": "3.0.0",
+    "description": "A super-simple-small keyval store built on top of IndexedDB",
+    "main": "./dist/idb-keyval-cjs.js",
+    "module": "./dist/idb-keyval.mjs",
+    "types": "./dist/idb-keyval.d.ts",
+    "scripts": {
+        "build": "del dist && rollup -c && uglifyjs --compress --mangle -o dist/idb-keyval-iife.min.js dist/idb-keyval-iife.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jakearchibald/idb-keyval.git"
+    },
+    "keywords": [
+                 "idb",
+                 "indexeddb",
+                 "store",
+                 "keyval",
+                 "localstorage",
+                 "storage",
+                 "promise"
+                 ],
+    "author": "Jake Archibald",
+    "contributors": [
+                     "Benny Powers"
+                     ],
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/jakearchibald/idb-keyval/issues"
+    },
+    "homepage": "https://github.com/jakearchibald/idb-keyval#readme",
+    "devDependencies": {
+        "del-cli": "^1.1.0",
+        "rollup": "^0.56.5",
+        "rollup-plugin-typescript2": "^0.12.0",
+        "typescript": "^2.7.2",
+        "uglify-es": "^3.3.9"
+    }
 }
