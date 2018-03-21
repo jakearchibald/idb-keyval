@@ -4,18 +4,12 @@ function getDB() {
   if (!db) {
     db = new Promise((resolve, reject) => {
       const openreq = indexedDB.open('keyval-store', 1);
+      openreq.onerror = () => reject(openreq.error);
+      openreq.onsuccess = () => resolve(openreq.result);
 
-      openreq.onerror = () => {
-        reject(openreq.error);
-      };
-
+      // First time setup: create an empty object store
       openreq.onupgradeneeded = () => {
-        // First time setup: create an empty object store
         openreq.result.createObjectStore('keyval');
-      };
-
-      openreq.onsuccess = () => {
-        resolve(openreq.result);
       };
     });
   }
@@ -23,18 +17,12 @@ function getDB() {
 }
 
 function withStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
-  return getDB().then(db => {
-    return new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction('keyval', type);
-      transaction.oncomplete = () => {
-        resolve();
-      };
-      transaction.onerror = () => {
-        reject(transaction.error);
-      };
-      callback(transaction.objectStore('keyval'));
-    });
-  });
+  return getDB().then(db => new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction('keyval', type);
+    transaction.oncomplete = () => resolve();
+    transaction.onabort = transaction.onerror = () => reject(transaction.error);
+    callback(transaction.objectStore('keyval'));
+  }));
 }
 
 export function get<Type>(key: IDBValidKey): Promise<Type> {
@@ -57,7 +45,7 @@ export function del(key: IDBValidKey): Promise<void> {
 }
 
 export function clear(): Promise<void> {
-  return withStore('readwrite', function (store) {
+  return withStore('readwrite', store => {
     store.clear();
   });
 }

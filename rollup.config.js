@@ -9,7 +9,9 @@ export default {
     name: 'idbKeyval'
   }, {
     file: 'dist/idb-keyval-cjs.js',
-    format: 'cjs',
-    name: 'idbKeyval'
+    format: 'cjs'
+  }, {
+    file: 'dist/idb-keyval.mjs',
+    format: 'es'
   }]
 };

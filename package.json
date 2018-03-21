@@ -2,11 +2,11 @@
   "name": "idb-keyval",
   "version": "2.4.2",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
-  "main": "dist/idb-keyval-cjs.js",
-  "module": "idb-keyval.js",
-  "typings": "typings.d.ts",
+  "main": "./dist/idb-keyval-cjs.js",
+  "module": "./dist/idb-keyval.mjs",
+  "types": "./dist/idb-keyval.d.ts",
   "scripts": {
-    "build": "del dist && rollup -c && uglifyjs -o dist/idb-keyval-iife.min.js dist/idb-keyval-iife.js"
+    "build": "del dist && rollup -c && uglifyjs --compress --mangle -o dist/idb-keyval-iife.min.js dist/idb-keyval-iife.js"
   },
   "repository": {
     "type": "git",
