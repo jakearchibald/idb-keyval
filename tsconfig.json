@@ -3,7 +3,11 @@
     "alwaysStrict": true,
     "module": "esnext",
     "strict": true,
-    "target": "esnext",
+    "target": "es5",
+    "lib": [
+        "es2016",
+        "dom"
+    ],
     "declaration": true
   }
 }
