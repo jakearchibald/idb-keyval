@@ -99,3 +99,24 @@ import { get, set } from 'idb-keyval';
 
 * `dist/idb-keyval.mjs` is a valid JS module.
 * `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
+
+## Updating from 2.x
+
+2.x exported an object with methods:
+
+```js
+// This no longer works in 3.x
+import idbKeyval from 'idb-keyval';
+
+idbKeyval.set('foo', 'bar');
+```
+
+Whereas in 3.x you import the methods directly:
+
+```js
+import { set } from 'idb-keyval';
+
+set('foo', 'bar');
+```
+
+This is better for minification, and allows tree shaking.
