@@ -31,8 +31,12 @@
     },
     "homepage": "https://github.com/jakearchibald/idb-keyval#readme",
     "devDependencies": {
+        "babel-core": "^6.26.3",
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-env": "^1.7.0",
         "del-cli": "^1.1.0",
         "rollup": "^0.56.5",
+        "rollup-plugin-babel": "^3.0.4",
         "rollup-plugin-typescript2": "^0.12.0",
         "typescript": "^2.7.2",
         "uglify-es": "^3.3.9"
