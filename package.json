@@ -6,7 +6,9 @@
     "module": "./dist/idb-keyval.mjs",
     "types": "./dist/idb-keyval.d.ts",
     "scripts": {
-        "build": "del dist && rollup -c && uglifyjs --compress --mangle -o dist/idb-keyval-iife.min.js dist/idb-keyval-iife.js"
+        "build": "del dist && rollup -c && npm run compress-iife && npm run compress-iife && npm run create-compat",
+        "compress-iife": "uglifyjs --compress --mangle -o dist/idb-keyval-iife.min.js dist/idb-keyval-iife.js",
+        "create-compat": "babel dist/idb-keyval-iife.js | uglifyjs --compress --mangle > dist/idb-keyval-iife-compat.min.js"
     },
     "repository": {
         "type": "git",
@@ -31,6 +33,8 @@
     },
     "homepage": "https://github.com/jakearchibald/idb-keyval#readme",
     "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
         "del-cli": "^1.1.0",
         "rollup": "^0.56.5",
         "rollup-plugin-typescript2": "^0.12.0",

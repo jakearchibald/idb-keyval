@@ -5,7 +5,7 @@
 
 This is a super-simple-small promise-based keyval store implemented with IndexedDB, largely based on [async-storage by Mozilla](https://github.com/mozilla-b2g/gaia/blob/master/shared/js/async_storage.js).
 
-[localForage](https://github.com/localForage/localForage) offers similar functionality, but supports older browsers with broken/absent IDB implementations. Because of that, it's 7.4k, whereas idb-keyval is ~550 bytes. Also, it's tree-shaking friendly, so you'll probably end up using fewer than 450 bytes. Pick whichever works best for you!
+[localForage](https://github.com/localForage/localForage) offers similar functionality, but supports older browsers with broken/absent IDB implementations. Because of that, it's 7.4k, whereas idb-keyval is < 600 bytes. Also, it's tree-shaking friendly, so you'll probably end up using fewer than 500 bytes. Pick whichever works best for you!
 
 This is only a keyval store. If you need to do more complex things like iteration & indexing, check out [IDB on NPM](https://www.npmjs.com/package/idb) (a little heavier at 1.7k). The first example in its README is how to recreate this library.
 
@@ -99,6 +99,8 @@ import { get, set } from 'idb-keyval';
 
 * `dist/idb-keyval.mjs` is a valid JS module.
 * `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
+* `dist/idb-keyval-iife.min.js` As above, but minified.
+* `dist/idb-keyval-iife-compat.min.js` As above, but works in older browsers such as IE 10.
 
 ## Updating from 2.x
 
