@@ -1,17 +1,35 @@
 export class Store {
-  readonly _dbp: Promise<IDBDatabase>;
+  private _dbp: Promise<IDBDatabase>;
 
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
-    this._dbp = new Promise((resolve, reject) => {
-      const openreq = indexedDB.open(dbName, 1);
+    const connection = (version?: number): Promise<IDBDatabase> => new Promise((resolve, reject) => {
+      const openreq = indexedDB.open(dbName, version);
       openreq.onerror = () => reject(openreq.error);
-      openreq.onsuccess = () => resolve(openreq.result);
+      openreq.onsuccess = () => {
+        // If a later version of this database wants to open,
+        // close and create a new connection for the new version.
+        openreq.result.onversionchange = () => {
+          openreq.result.close();
+          this._dbp = connection();
+        }
+        // If this database has been opened before, but never with this
+        // storeName, the objectStore won't exist yet. In which case,
+        // force an upgrade by opening a connection with version n+1.
+        if (!openreq.result.objectStoreNames.contains(storeName)) {
+          resolve(connection(openreq.result.version + 1));
+        }
+        else {
+          resolve(openreq.result);
+        }
+      }
 
       // First time setup: create an empty object store
       openreq.onupgradeneeded = () => {
         openreq.result.createObjectStore(storeName);
       };
     });
+
+    this._dbp = connection();
   }
 
   _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
@@ -62,7 +80,7 @@ export function keys(store = getDefaultStore()): Promise<IDBValidKey[]> {
   return store._withIDBStore('readonly', store => {
     // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
     // And openKeyCursor isn't supported by Safari.
-    (store.openKeyCursor || store.openCursor).call(store).onsuccess = function() {
+    (store.openKeyCursor || store.openCursor).call(store).onsuccess = function () {
       if (!this.result) return;
       keys.push(this.result.key);
       this.result.continue()

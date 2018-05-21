@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="../dist/idb-keyval-iife.js"></script>
+<script>
+  (async function() {
+    {
+      await idbKeyval.set('foo', 1);
+      console.log(await idbKeyval.get('foo'));
+    }
+    {
+      const store = new idbKeyval.Store();
+      await idbKeyval.set('foo', 2, store);
+      console.log(await idbKeyval.get('foo', store));
+    }
+    {
+      const store = new idbKeyval.Store('my-db');
+      await idbKeyval.set('foo', 3, store);
+      console.log(await idbKeyval.get('foo', store));
+    }
+    {
+      const store = new idbKeyval.Store('my-db', 'whatever-store');
+      await idbKeyval.set('foo', 4, store);
+      console.log(await idbKeyval.get('foo', store));
+    }
+    {
+      const store = new idbKeyval.Store('my-db', 'whatever-store-2');
+      await idbKeyval.set('foo', 5, store);
+      console.log(await idbKeyval.get('foo', store));
+    }
+    {
+      const store1 = new idbKeyval.Store('test', 'one');
+      idbKeyval.set('foo', 1, store1);
+      const store2 = new idbKeyval.Store('test', 'two');
+      await idbKeyval.set('foo', 6, store1);
+      console.log(await idbKeyval.get('foo', store1));
+    }
+  })();
+</script>
