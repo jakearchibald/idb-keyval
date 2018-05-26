@@ -1,9 +1,17 @@
+// Edge blocks any db upgrade if there is any open connection
+// to the target db, thus, it is necessary to keep track of
+// all opened connections, to refresh them if an upgrade is needed
+// onversionchange is never called on Edge
+const allStores: Store[] = [];
+
 export class Store {
   private _dbp: Promise<IDBDatabase>;
-
-  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
+  private _refreshConnection: () => Promise<void>;
+  
+  constructor(readonly dbName = 'keyval-store', readonly storeName = 'keyval') {
     const connection = (version?: number): Promise<IDBDatabase> => new Promise((resolve, reject) => {
-      const openreq = indexedDB.open(dbName, version);
+      // Edge throws error when version passed in to "open" is undefined
+      const openreq = !version ? indexedDB.open(dbName) : indexedDB.open(dbName, version);
       openreq.onerror = () => reject(openreq.error);
       openreq.onsuccess = () => {
         // If a later version of this database wants to open,
@@ -16,22 +24,34 @@ export class Store {
         // storeName, the objectStore won't exist yet. In which case,
         // force an upgrade by opening a connection with version n+1.
         if (!openreq.result.objectStoreNames.contains(storeName)) {
+          openreq.result.close();
           resolve(connection(openreq.result.version + 1));
+          // Refresh connections to the target db
+          allStores.forEach(x => {
+            if (x.dbName === dbName) {
+              x._refreshConnection();
+            }
+          });
         }
         else {
+          allStores.push(this);
           resolve(openreq.result);
         }
       }
-
+      
       // First time setup: create an empty object store
       openreq.onupgradeneeded = () => {
         openreq.result.createObjectStore(storeName);
       };
     });
-
+    this._refreshConnection = () => this._dbp
+      .then(db => {
+        db.close();
+        this._dbp = connection();
+      });
     this._dbp = connection();
   }
-
+  
   _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
     return this._dbp.then(db => new Promise<void>((resolve, reject) => {
       const transaction = db.transaction(this.storeName, type);
@@ -76,7 +96,7 @@ export function clear(store = getDefaultStore()): Promise<void> {
 
 export function keys(store = getDefaultStore()): Promise<IDBValidKey[]> {
   const keys: IDBValidKey[] = [];
-
+  
   return store._withIDBStore('readonly', store => {
     // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
     // And openKeyCursor isn't supported by Safari.
