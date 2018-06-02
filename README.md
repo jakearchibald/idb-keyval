@@ -83,6 +83,12 @@ That's it!
 
 ## Installing
 
+### Via CDN 
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js"></script>
+```
+
 ### Via npm + webpack/rollup
 
 ```sh
