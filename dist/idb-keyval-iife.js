@@ -63,6 +63,17 @@ function keys(store = getDefaultStore()) {
         };
     }).then(() => keys);
 }
+function index(indexName, indexValue, store = getDefaultStore()) {
+    const indexes = [];
+    return store._withIDBStore('readonly', store => {
+        var index = store.index(indexName);
+        index.openCursor(indexValue).onsuccess = function () {
+            if (!this.result) return;
+            indexes.push(this.result.value);
+            this.result.continue();
+        };
+    }).then(() => indexes);
+}    
 
 exports.Store = Store;
 exports.get = get;
@@ -70,6 +81,7 @@ exports.set = set;
 exports.del = del;
 exports.clear = clear;
 exports.keys = keys;
+exports.index = index;    
 
 return exports;
 
