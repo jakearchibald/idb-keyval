@@ -102,6 +102,16 @@ import { get, set } from 'idb-keyval';
 * `dist/idb-keyval-iife.min.js` As above, but minified.
 * `dist/idb-keyval-iife-compat.min.js` As above, but works in older browsers such as IE 10.
 
+These built versions are also available on jsDelivr, e.g.:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js"></script>
+<!-- Or in modern browsers: -->
+<script type="module">
+  import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval.mjs';
+</script>
+```
+
 ## Updating from 2.x
 
 2.x exported an object with methods:
