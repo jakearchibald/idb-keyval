@@ -13,5 +13,8 @@ export default {
   }, {
     file: 'dist/idb-keyval.mjs',
     format: 'es'
+  }, {
+    file: 'dist/idb-keyval-amd.js',
+    format: 'amd',
   }]
 };
