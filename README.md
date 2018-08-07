@@ -101,6 +101,8 @@ import { get, set } from 'idb-keyval';
 * `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
 * `dist/idb-keyval-iife.min.js` As above, but minified.
 * `dist/idb-keyval-iife-compat.min.js` As above, but works in older browsers such as IE 10.
+* `dist/idb-keyval-amd.js` is an AMD module.
+* `dist/idb-keyval-amd.min.js` As above, but minified.
 
 These built versions are also available on jsDelivr, e.g.:
 
