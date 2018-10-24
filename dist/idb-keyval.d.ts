@@ -1,6 +1,7 @@
 export declare class Store {
     readonly storeName: string;
-    readonly _dbp: Promise<IDBDatabase>;
+    private _dbp;
+    private _createIDBDatabase;
     constructor(dbName?: string, storeName?: string);
     _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void>;
 }

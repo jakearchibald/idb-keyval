@@ -1,8 +1,8 @@
 export class Store {
-  readonly _dbp: Promise<IDBDatabase>;
+  private _dbp!: Promise<IDBDatabase>;
 
-  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
-    this._dbp = new Promise((resolve, reject) => {
+  private _createIDBDatabase(dbName: string, storeName: string) {
+    this._dbp = new Promise<IDBDatabase>((resolve, reject) => {
       const openreq = indexedDB.open(dbName, 1);
       openreq.onerror = () => reject(openreq.error);
       openreq.onsuccess = () => resolve(openreq.result);
@@ -11,7 +11,15 @@ export class Store {
       openreq.onupgradeneeded = () => {
         openreq.result.createObjectStore(storeName);
       };
+    })
+    .then(dbp => {
+      dbp.onclose = () => this._createIDBDatabase(dbName, storeName);
+      return dbp;
     });
+  }
+
+  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
+    this._createIDBDatabase(dbName, storeName);
   }
 
   _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {

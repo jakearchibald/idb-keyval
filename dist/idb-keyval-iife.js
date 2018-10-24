@@ -4,6 +4,9 @@ var idbKeyval = (function (exports) {
 class Store {
     constructor(dbName = 'keyval-store', storeName = 'keyval') {
         this.storeName = storeName;
+        this._createIDBDatabase(dbName, storeName);
+    }
+    _createIDBDatabase(dbName, storeName) {
         this._dbp = new Promise((resolve, reject) => {
             const openreq = indexedDB.open(dbName, 1);
             openreq.onerror = () => reject(openreq.error);
@@ -12,6 +15,10 @@ class Store {
             openreq.onupgradeneeded = () => {
                 openreq.result.createObjectStore(storeName);
             };
+        })
+            .then(dbp => {
+            dbp.onclose = () => this._createIDBDatabase(dbName, storeName);
+            return dbp;
         });
     }
     _withIDBStore(type, callback) {
