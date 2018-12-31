@@ -33,6 +33,8 @@ function get(key, store = getDefaultStore()) {
     }).then(() => req.result);
 }
 function set(key, value, store = getDefaultStore()) {
+    if (value === null)
+        value = undefined;
     return store._withIDBStore('readwrite', store => {
         store.put(value, key);
     });
