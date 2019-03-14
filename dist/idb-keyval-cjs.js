@@ -41,6 +41,14 @@ function set(key, value, store = getDefaultStore()) {
         store.put(value, key);
     });
 }
+function update(key, updater, store = getDefaultStore()) {
+    return store._withIDBStore('readwrite', store => {
+        const req = store.get(key);
+        req.onsuccess = () => {
+            store.put(updater(req.result), key);
+        };
+    });
+}
 function del(key, store = getDefaultStore()) {
     return store._withIDBStore('readwrite', store => {
         store.delete(key);
@@ -68,6 +76,7 @@ function keys(store = getDefaultStore()) {
 exports.Store = Store;
 exports.get = get;
 exports.set = set;
+exports.update = update;
 exports.del = del;
 exports.clear = clear;
 exports.keys = keys;

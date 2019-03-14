@@ -44,6 +44,15 @@ export function set(key: IDBValidKey, value: any, store = getDefaultStore()): Pr
   });
 }
 
+export function update(key: IDBValidKey, updater: (val: any) => any, store = getDefaultStore()): Promise<void> {
+  return store._withIDBStore('readwrite', store => {
+    const req = store.get(key);
+    req.onsuccess = () => {
+      store.put(updater(req.result), key);
+    };
+  });
+}
+
 export function del(key: IDBValidKey, store = getDefaultStore()): Promise<void> {
   return store._withIDBStore('readwrite', store => {
     store.delete(key);
