@@ -16,7 +16,16 @@ export class Store {
       };
     });
     if (autoclose) {
-      this.autoclose = () => this.close();
+      this.autoclose = () => {
+        this.closed = true;
+        document.removeEventListener('freeze', this.autoclose);
+        const db = _dbwm.get(this);
+        _dbwm.delete(this);
+        if (db) {
+          db.onclose = null;
+          db.close();
+        }
+      };
       // Custom handling for document freezing. Could be done with `{once: true}`,
       // but not something worth touching for compatibility reasons.
       this._dbp.then(db => {
@@ -26,20 +35,7 @@ export class Store {
     }
   }
 
-  close(): void {
-    if (this.autoclose) {
-      this.closed = true;
-      document.removeEventListener('freeze', this.autoclose);
-      const db = _dbwm.get(this);
-      _dbwm.delete(this);
-      if (db) {
-        db.onclose = null;
-        db.close();
-      }
-    }
-  }
-
-  private get dbp(): typeof this._dbp {
+  private get dbp(): Promise<IDBDatabase> {
     if (this.closed) {
       this._dbp = new Promise((resolve, reject) => {
         const openreq = indexedDB.open(dbName, 1);
