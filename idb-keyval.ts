@@ -1,7 +1,7 @@
 const _dbwm = new WeakMap<Store, IDBDatabase>();
 export class Store {
   private _dbp: Promise<IDBDatabase>;
-  private closed: boolean = false;
+  private closed?: boolean;
   private autoclose?: () => void;
 
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval', autoclose = false) {
