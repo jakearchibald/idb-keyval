@@ -4,18 +4,6 @@ export class Store {
   private closed: boolean = false;
   private autoclose?: () => void;
 
-  close(): void {
-    if (this.autoclose) {
-      this.closed = true;
-      document.removeEventListener('freeze', this.autoclose);
-      const db = _dbwm.get(this);
-      _dbwm.delete(this);
-      if (db) {
-        db.onclose = null;
-        db.close();
-      }
-    }
-  }
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval', autoclose = false) {
     this._dbp = new Promise((resolve, reject) => {
       const openreq = indexedDB.open(dbName, 1);
@@ -37,6 +25,20 @@ export class Store {
       });
     }
   }
+
+  close(): void {
+    if (this.autoclose) {
+      this.closed = true;
+      document.removeEventListener('freeze', this.autoclose);
+      const db = _dbwm.get(this);
+      _dbwm.delete(this);
+      if (db) {
+        db.onclose = null;
+        db.close();
+      }
+    }
+  }
+
   private get dbp(): typeof this._dbp {
     if (this.closed) {
       this._dbp = new Promise((resolve, reject) => {
