@@ -1,7 +1,22 @@
+const _dbwm = new WeakMap<Store, IDBDatabase>();
 export class Store {
-  readonly _dbp: Promise<IDBDatabase>;
+  private _dbp: Promise<IDBDatabase>;
+  private closed: boolean = false;
+  private autoclose?: () => void;
 
-  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
+  close(): void {
+    if (this.autoclose) {
+      this.closed = true;
+      document.removeEventListener('freeze', this.autoclose);
+      const db = _dbwm.get(this);
+      _dbwm.delete(this);
+      if (db) {
+        db.onclose = null;
+        db.close();
+      }
+    }
+  }
+  constructor(dbName = 'keyval-store', readonly storeName = 'keyval', autoclose = false) {
     this._dbp = new Promise((resolve, reject) => {
       const openreq = indexedDB.open(dbName, 1);
       openreq.onerror = () => reject(openreq.error);
@@ -12,10 +27,36 @@ export class Store {
         openreq.result.createObjectStore(storeName);
       };
     });
+    if (autoclose) {
+      this.autoclose = () => this.close();
+      // Custom handling for document freezing. Could be done with `{once: true}`,
+      // but not something worth touching for compatibility reasons.
+      this._dbp.then(db => {
+        _dbwm.set(this, db);
+        document.addEventListener('freeze', (db.onclose = this.autoclose));
+      });
+    }
+  }
+  private get dbp(): typeof this._dbp {
+    if (this.closed) {
+      this._dbp = new Promise((resolve, reject) => {
+        const openreq = indexedDB.open(dbName, 1);
+        openreq.onerror = () => reject(openreq.error);
+        openreq.onsuccess = () => resolve(openreq.result);
+        // Presume the DB has not been deleted between sessions.
+        // This is possibly a bad idea.
+      });
+      this._dbp.then(db => {
+        _dbwm.set(this, db);
+        document.addEventListener('freeze', (db.onclose = this.autoclose));
+      });
+      this.closed = false;
+    }
+    return this._dbp;
   }
 
   _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
-    return this._dbp.then(db => new Promise<void>((resolve, reject) => {
+    return (this.autoclose ? this.dbp : this._dbp).then(db => new Promise<void>((resolve, reject) => {
       const transaction = db.transaction(this.storeName, type);
       transaction.oncomplete = () => resolve();
       transaction.onabort = transaction.onerror = () => reject(transaction.error);
