@@ -95,6 +95,12 @@ Now you can require/import `idb-keyval`:
 import { get, set } from 'idb-keyval';
 ```
 
+If you're targeting older versions of IE, you may have more luck with:
+
+```js
+const idb = require('idb-keyval/dist/idb-keyval-cjs-compat.min.js');
+```
+
 ### Via `<script>`
 
 * `dist/idb-keyval.mjs` is a valid JS module.
