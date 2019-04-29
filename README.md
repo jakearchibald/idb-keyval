@@ -104,6 +104,7 @@ const idb = require('idb-keyval/dist/idb-keyval-cjs-compat.min.js');
 ### Via `<script>`
 
 * `dist/idb-keyval.mjs` is a valid JS module.
+* `dist/idb-keyval.min.mjs` As above, but minified.
 * `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
 * `dist/idb-keyval-iife.min.js` As above, but minified.
 * `dist/idb-keyval-iife-compat.min.js` As above, but works in older browsers such as IE 10.
