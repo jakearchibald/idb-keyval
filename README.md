@@ -68,6 +68,16 @@ import { clear } from 'idb-keyval';
 clear();
 ```
 
+### close:
+
+Closes the IDB connection. May be useful to handle [when the page is frozen](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#developer-recommendations-for-each-state). The connection is reopened automatically the next time any other API is called.
+
+```js
+import { close } from 'idb-keyval';
+
+close();
+```
+
 ### Custom stores:
 
 By default, the methods above use an IndexedDB database named `keyval-store` and an object store named `keyval`. You can create your own store, and pass it as an additional parameter to any of the above methods:
