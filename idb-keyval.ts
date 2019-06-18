@@ -3,6 +3,10 @@ export class Store {
 
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
     this._dbp = new Promise((resolve, reject) => {
+      if (!('indexedDB' in window)) {
+        reject('This platform doesn\'t support IndexedDB');
+        return;
+      }
       const openreq = indexedDB.open(dbName, 1);
       openreq.onerror = () => reject(openreq.error);
       openreq.onsuccess = () => resolve(openreq.result);
