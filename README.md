@@ -1,4 +1,4 @@
-# IDB-Keyval
+# IDB-Keyval (fork)
 
 [![npm](https://img.shields.io/npm/v/idb-keyval.svg)](https://www.npmjs.com/package/idb-keyval)
 [![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/idb-keyval/dist/idb-keyval-iife.min.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/idb-keyval/dist/idb-keyval-iife.min.js)
