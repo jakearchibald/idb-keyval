@@ -3,14 +3,28 @@ export class Store {
 
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
     this._dbp = new Promise((resolve, reject) => {
-      const openreq = indexedDB.open(dbName, 1);
-      openreq.onerror = () => reject(openreq.error);
-      openreq.onsuccess = () => resolve(openreq.result);
+      function initialise(handleSuccess: (database: IDBDatabase) => void, version?: number) {
+        const openreq = indexedDB.open(dbName, version == undefined ? 1 : version);
+        openreq.onerror = () => reject(openreq.error);
+        openreq.onsuccess = () => handleSuccess(openreq.result);
 
-      // First time setup: create an empty object store
-      openreq.onupgradeneeded = () => {
-        openreq.result.createObjectStore(storeName);
-      };
+        // First time setup: create an empty object store
+        openreq.onupgradeneeded = () => {
+          openreq.result.createObjectStore(storeName);
+        };
+      }
+
+      // initialize and see if we already have the store
+      initialise(db => {
+        if (db.objectStoreNames.contains(storeName)) {
+          // we're done
+          resolve(db);
+        } else {
+          // initialize again by upgrading
+          initialise(resolve, db.version + 1);
+        }
+      }, 1);
+
     });
   }
 
