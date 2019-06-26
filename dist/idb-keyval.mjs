@@ -3,7 +3,7 @@ class Store {
         this.storeName = storeName;
         this._dbp = new Promise((resolve, reject) => {
             function initialise(handleSuccess, version) {
-                const openreq = indexedDB.open(dbName, version == undefined ? 1 : version);
+                const openreq = version == undefined ? indexedDB.open(dbName) : indexedDB.open(dbName, version);
                 openreq.onerror = () => reject(openreq.error);
                 openreq.onsuccess = () => handleSuccess(openreq.result);
                 // First time setup: create an empty object store
@@ -21,7 +21,7 @@ class Store {
                     // initialize again by upgrading
                     initialise(resolve, db.version + 1);
                 }
-            }, 1);
+            });
         });
     }
     _withIDBStore(type, callback) {

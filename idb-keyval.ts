@@ -4,7 +4,7 @@ export class Store {
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
     this._dbp = new Promise((resolve, reject) => {
       function initialise(handleSuccess: (database: IDBDatabase) => void, version?: number) {
-        const openreq = indexedDB.open(dbName, version == undefined ? 1 : version);
+        const openreq = version == undefined ? indexedDB.open(dbName) : indexedDB.open(dbName, version);
         openreq.onerror = () => reject(openreq.error);
         openreq.onsuccess = () => handleSuccess(openreq.result);
 
@@ -23,8 +23,7 @@ export class Store {
           // initialize again by upgrading
           initialise(resolve, db.version + 1);
         }
-      }, 1);
-
+      });
     });
   }
 
