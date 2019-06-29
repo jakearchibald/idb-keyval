@@ -20,7 +20,8 @@ export class Store {
           // we're done
           resolve(db);
         } else {
-          // initialize again by upgrading
+          // initialize again by upgrading (close previous db first esp. for IE)
+          db.close();
           initialise(resolve, db.version + 1);
         }
       });
