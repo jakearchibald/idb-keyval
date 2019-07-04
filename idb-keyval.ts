@@ -1,5 +1,5 @@
-function promiseStore(openreq: IDBOpenDBRequest, storeName: string): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+const promiseStore = (openreq: IDBOpenDBRequest, storeName: string): Promise<IDBDatabase> =>
+  new Promise((resolve, reject) => {
     openreq.onerror = () => reject(openreq.error);
     openreq.onsuccess = () => resolve(openreq.result);
 
@@ -8,7 +8,6 @@ function promiseStore(openreq: IDBOpenDBRequest, storeName: string): Promise<IDB
       openreq.result.createObjectStore(storeName);
     };
   });
-}
 
 export class Store {
   readonly _dbp: Promise<IDBDatabase>;

@@ -2,16 +2,14 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function promiseStore(openreq, storeName) {
-    return new Promise((resolve, reject) => {
-        openreq.onerror = () => reject(openreq.error);
-        openreq.onsuccess = () => resolve(openreq.result);
-        // First time setup: create an empty object store
-        openreq.onupgradeneeded = () => {
-            openreq.result.createObjectStore(storeName);
-        };
-    });
-}
+const promiseStore = (openreq, storeName) => new Promise((resolve, reject) => {
+    openreq.onerror = () => reject(openreq.error);
+    openreq.onsuccess = () => resolve(openreq.result);
+    // First time setup: create an empty object store
+    openreq.onupgradeneeded = () => {
+        openreq.result.createObjectStore(storeName);
+    };
+});
 class Store {
     constructor(dbName = 'keyval-store', storeName = 'keyval') {
         this.storeName = storeName;
