@@ -11,7 +11,13 @@ const promiseStore = (openreq, storeName) => new Promise((resolve, reject) => {
 class Store {
     constructor(dbName = 'keyval-store', storeName = 'keyval') {
         this.storeName = storeName;
-        this._dbp = promiseStore(indexedDB.open(dbName), storeName);
+        this._dbp = promiseStore(indexedDB.open(dbName), storeName)
+            .then(db => {
+            if (db.objectStoreNames.contains(storeName))
+                return db;
+            db.close();
+            return promiseStore(indexedDB.open(dbName, db.version + 1), storeName);
+        });
     }
     _withIDBStore(type, callback) {
         return this._dbp.then(db => new Promise((resolve, reject) => {
@@ -20,21 +26,6 @@ class Store {
             transaction.onabort = transaction.onerror = () => reject(transaction.error);
             callback(transaction.objectStore(this.storeName));
         }));
-    }
-}
-class MultiStore extends Store {
-    constructor(dbName = 'keyval-store', storeName = 'keyval') {
-        super(dbName, storeName);
-        this.storeName = storeName;
-        this._dbup = this._dbp.then(db => {
-            if (db.objectStoreNames.contains(storeName))
-                return db;
-            db.close();
-            return promiseStore(indexedDB.open(dbName, db.version + 1), storeName);
-        });
-    }
-    _withIDBStore(type, callback) {
-        return this._dbup.then(() => super._withIDBStore(type, callback));
     }
 }
 let store;
@@ -79,7 +70,6 @@ function keys(store = getDefaultStore()) {
 }
 
 exports.Store = Store;
-exports.MultiStore = MultiStore;
 exports.get = get;
 exports.set = set;
 exports.del = del;
