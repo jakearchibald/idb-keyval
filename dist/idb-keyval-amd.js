@@ -1,17 +1,17 @@
 define(['exports'], function (exports) { 'use strict';
 
+const promiseStore = (openreq, storeName) => new Promise((resolve, reject) => {
+    openreq.onerror = () => reject(openreq.error);
+    openreq.onsuccess = () => resolve(openreq.result);
+    // First time setup: create an empty object store
+    openreq.onupgradeneeded = () => {
+        openreq.result.createObjectStore(storeName);
+    };
+});
 class Store {
     constructor(dbName = 'keyval-store', storeName = 'keyval') {
         this.storeName = storeName;
-        this._dbp = new Promise((resolve, reject) => {
-            const openreq = indexedDB.open(dbName, 1);
-            openreq.onerror = () => reject(openreq.error);
-            openreq.onsuccess = () => resolve(openreq.result);
-            // First time setup: create an empty object store
-            openreq.onupgradeneeded = () => {
-                openreq.result.createObjectStore(storeName);
-            };
-        });
+        this._dbp = promiseStore(indexedDB.open(dbName), storeName);
     }
     _withIDBStore(type, callback) {
         return this._dbp.then(db => new Promise((resolve, reject) => {
@@ -20,6 +20,21 @@ class Store {
             transaction.onabort = transaction.onerror = () => reject(transaction.error);
             callback(transaction.objectStore(this.storeName));
         }));
+    }
+}
+class MultiStore extends Store {
+    constructor(dbName = 'keyval-store', storeName = 'keyval') {
+        super(dbName, storeName);
+        this.storeName = storeName;
+        this._dbup = this._dbp.then(db => {
+            if (db.objectStoreNames.contains(storeName))
+                return db;
+            db.close();
+            return promiseStore(indexedDB.open(dbName, db.version + 1), storeName);
+        });
+    }
+    _withIDBStore(type, callback) {
+        return this._dbup.then(() => super._withIDBStore(type, callback));
     }
 }
 let store;
@@ -64,6 +79,7 @@ function keys(store = getDefaultStore()) {
 }
 
 exports.Store = Store;
+exports.MultiStore = MultiStore;
 exports.get = get;
 exports.set = set;
 exports.del = del;

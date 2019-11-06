@@ -1,17 +1,19 @@
+const promiseStore = (openreq: IDBOpenDBRequest, storeName: string): Promise<IDBDatabase> =>
+  new Promise((resolve, reject) => {
+    openreq.onerror = () => reject(openreq.error);
+    openreq.onsuccess = () => resolve(openreq.result);
+
+    // First time setup: create an empty object store
+    openreq.onupgradeneeded = () => {
+      openreq.result.createObjectStore(storeName);
+    };
+  });
+
 export class Store {
   readonly _dbp: Promise<IDBDatabase>;
 
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
-    this._dbp = new Promise((resolve, reject) => {
-      const openreq = indexedDB.open(dbName, 1);
-      openreq.onerror = () => reject(openreq.error);
-      openreq.onsuccess = () => resolve(openreq.result);
-
-      // First time setup: create an empty object store
-      openreq.onupgradeneeded = () => {
-        openreq.result.createObjectStore(storeName);
-      };
-    });
+    this._dbp = promiseStore(indexedDB.open(dbName), storeName);
   }
 
   _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
@@ -21,6 +23,24 @@ export class Store {
       transaction.onabort = transaction.onerror = () => reject(transaction.error);
       callback(transaction.objectStore(this.storeName));
     }));
+  }
+}
+
+export class MultiStore extends Store {
+
+  readonly _dbup: Promise<IDBDatabase>;
+
+  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
+    super(dbName, storeName);
+    this._dbup = this._dbp.then(db => {
+      if (db.objectStoreNames.contains(storeName)) return db;
+      db.close();
+      return promiseStore(indexedDB.open(dbName, db.version + 1), storeName);
+    });
+  }
+
+  _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
+    return this._dbup.then(() => super._withIDBStore(type, callback));
   }
 }
 
