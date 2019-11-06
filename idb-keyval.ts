@@ -13,7 +13,12 @@ export class Store {
   readonly _dbp: Promise<IDBDatabase>;
 
   constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
-    this._dbp = promiseStore(indexedDB.open(dbName), storeName);
+    this._dbp = promiseStore(indexedDB.open(dbName), storeName)
+      .then(db => {
+        if (db.objectStoreNames.contains(storeName)) return db;
+        db.close();
+        return promiseStore(indexedDB.open(dbName, db.version + 1), storeName);
+      });;
   }
 
   _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
@@ -23,24 +28,6 @@ export class Store {
       transaction.onabort = transaction.onerror = () => reject(transaction.error);
       callback(transaction.objectStore(this.storeName));
     }));
-  }
-}
-
-export class MultiStore extends Store {
-
-  readonly _dbup: Promise<IDBDatabase>;
-
-  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
-    super(dbName, storeName);
-    this._dbup = this._dbp.then(db => {
-      if (db.objectStoreNames.contains(storeName)) return db;
-      db.close();
-      return promiseStore(indexedDB.open(dbName, db.version + 1), storeName);
-    });
-  }
-
-  _withIDBStore(type: IDBTransactionMode, callback: ((store: IDBObjectStore) => void)): Promise<void> {
-    return this._dbup.then(() => super._withIDBStore(type, callback));
   }
 }
 
