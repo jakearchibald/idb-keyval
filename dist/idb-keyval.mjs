@@ -32,6 +32,12 @@ function get(key, store = getDefaultStore()) {
         req = store.get(key);
     }).then(() => req.result);
 }
+function getAll(query, count, store = getDefaultStore()) {
+    let req;
+    return store._withIDBStore('readonly', store => {
+        req = store.getAll(query, count);
+    }).then(() => req.result);
+}
 function set(key, value, store = getDefaultStore()) {
     return store._withIDBStore('readwrite', store => {
         store.put(value, key);
@@ -61,4 +67,4 @@ function keys(store = getDefaultStore()) {
     }).then(() => keys);
 }
 
-export { Store, get, set, del, clear, keys };
+export { Store, get, getAll, set, del, clear, keys };

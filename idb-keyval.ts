@@ -38,6 +38,13 @@ export function get<Type>(key: IDBValidKey, store = getDefaultStore()): Promise<
   }).then(() => req.result);
 }
 
+export function getAll<Type>(query: IDBValidKey | IDBKeyRange, count: number,  store = getDefaultStore()): Promise<Type> {
+  let req: IDBRequest;
+  return store._withIDBStore('readonly', store => {
+    req = store.getAll(query, count);
+  }).then(() => req.result);
+}
+
 export function set(key: IDBValidKey, value: any, store = getDefaultStore()): Promise<void> {
   return store._withIDBStore('readwrite', store => {
     store.put(value, key);

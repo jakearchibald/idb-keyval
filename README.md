@@ -43,6 +43,14 @@ get('hello').then(val => console.log(val));
 
 If there is no 'hello' key, then `val` will be `undefined`.
 
+### getAll:
+```js
+import { getAll } from 'idb-keyval';
+
+// logs: [ "bar", "world" ]
+getAll().then(val => console.log(val));
+```
+
 ### keys:
 
 ```js
