@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "moduleResolution": "node",
+    "outDir": ".ts-tmp",
+    "composite": true,
+    "declarationMap": true,
+    "baseUrl": "./",
+    "rootDir": "./",
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "allowSyntheticDefaultImports": true
+  }
+}

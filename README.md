@@ -29,7 +29,7 @@ import { set } from 'idb-keyval';
 
 set('hello', 'world')
   .then(() => console.log('It worked!'))
-  .catch(err => console.log('It failed!', err));
+  .catch((err) => console.log('It failed!', err));
 ```
 
 ### get:
@@ -38,7 +38,7 @@ set('hello', 'world')
 import { get } from 'idb-keyval';
 
 // logs: "world"
-get('hello').then(val => console.log(val));
+get('hello').then((val) => console.log(val));
 ```
 
 If there is no 'hello' key, then `val` will be `undefined`.
@@ -49,7 +49,7 @@ If there is no 'hello' key, then `val` will be `undefined`.
 import { keys } from 'idb-keyval';
 
 // logs: ["hello", "foo"]
-keys().then(keys => console.log(keys));
+keys().then((keys) => console.log(keys));
 ```
 
 ### del:
@@ -103,12 +103,12 @@ const idb = require('idb-keyval/dist/idb-keyval-cjs-compat.min.js');
 
 ### Via `<script>`
 
-* `dist/idb-keyval.mjs` is a valid JS module.
-* `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
-* `dist/idb-keyval-iife.min.js` As above, but minified.
-* `dist/idb-keyval-iife-compat.min.js` As above, but works in older browsers such as IE 10.
-* `dist/idb-keyval-amd.js` is an AMD module.
-* `dist/idb-keyval-amd.min.js` As above, but minified.
+- `dist/idb-keyval.mjs` is a valid JS module.
+- `dist/idb-keyval-iife.js` can be used in browsers that don't support modules. `idbKeyval` is created as a global.
+- `dist/idb-keyval-iife.min.js` As above, but minified.
+- `dist/idb-keyval-iife-compat.min.js` As above, but works in older browsers such as IE 10.
+- `dist/idb-keyval-amd.js` is an AMD module.
+- `dist/idb-keyval-amd.min.js` As above, but minified.
 
 These built versions are also available on jsDelivr, e.g.:
 
@@ -116,7 +116,10 @@ These built versions are also available on jsDelivr, e.g.:
 <script src="https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
-  import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval.mjs';
+  import {
+    get,
+    set,
+  } from 'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval.mjs';
 </script>
 ```
 
