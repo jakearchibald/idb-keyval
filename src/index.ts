@@ -1,85 +1,70 @@
-export class Store {
-  readonly _dbp: Promise<IDBDatabase>;
-
-  constructor(dbName = 'keyval-store', readonly storeName = 'keyval') {
-    this._dbp = new Promise((resolve, reject) => {
-      const openreq = indexedDB.open(dbName, 1);
-      openreq.onerror = () => reject(openreq.error);
-      openreq.onsuccess = () => resolve(openreq.result);
-
-      // First time setup: create an empty object store
-      openreq.onupgradeneeded = () => {
-        openreq.result.createObjectStore(storeName);
-      };
-    });
-  }
-
-  _withIDBStore(
-    type: IDBTransactionMode,
-    callback: (store: IDBObjectStore) => void,
-  ): Promise<void> {
-    return this._dbp.then(
-      (db) =>
-        new Promise<void>((resolve, reject) => {
-          const transaction = db.transaction(this.storeName, type);
-          transaction.oncomplete = () => resolve();
-          transaction.onabort = transaction.onerror = () =>
-            reject(transaction.error);
-          callback(transaction.objectStore(this.storeName));
-        }),
-    );
-  }
+function promisifyRequest<T = undefined>(
+  request: IDBRequest<T> | IDBTransaction,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    // @ts-ignore - file size hacks
+    request.oncomplete = request.onsuccess = () => resolve(request.result);
+    // @ts-ignore - file size hacks
+    request.onabort = request.onerror = () => reject(request.error);
+  });
 }
 
-let store: Store;
+export function createStore(dbName: string, storeName: string) {
+  const request = indexedDB.open(dbName, 1);
+  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+  const dbp = promisifyRequest(request);
 
-function getDefaultStore() {
-  if (!store) store = new Store();
+  return (txMode: IDBTransactionMode) =>
+    dbp.then((db) => db.transaction(storeName, txMode).objectStore(storeName));
+}
+
+let store: (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
+
+function defaultGetStore() {
+  if (!store) store = createStore('keyval-store', 'keyval');
   return store;
 }
 
-export function get<Type>(
+export function get(
   key: IDBValidKey,
-  store = getDefaultStore(),
-): Promise<Type> {
-  let req: IDBRequest;
-  return store
-    ._withIDBStore('readonly', (store) => {
-      req = store.get(key);
-    })
-    .then(() => req.result);
+  getStore = defaultGetStore(),
+): Promise<any> {
+  return getStore('readonly').then((store) => promisifyRequest(store.get(key)));
 }
 
 export function set(
   key: IDBValidKey,
   value: any,
-  store = getDefaultStore(),
+  getStore = defaultGetStore(),
 ): Promise<void> {
-  return store._withIDBStore('readwrite', (store) => {
+  return getStore('readwrite').then((store) => {
     store.put(value, key);
+    return promisifyRequest(store.transaction);
   });
 }
 
 export function del(
   key: IDBValidKey,
-  store = getDefaultStore(),
+  getStore = defaultGetStore(),
 ): Promise<void> {
-  return store._withIDBStore('readwrite', (store) => {
+  return getStore('readwrite').then((store) => {
     store.delete(key);
+    return promisifyRequest(store.transaction);
   });
 }
 
-export function clear(store = getDefaultStore()): Promise<void> {
-  return store._withIDBStore('readwrite', (store) => {
+export function clear(getStore = defaultGetStore()): Promise<void> {
+  return getStore('readwrite').then((store) => {
     store.clear();
+    return promisifyRequest(store.transaction);
   });
 }
 
-export function keys(store = getDefaultStore()): Promise<IDBValidKey[]> {
+export function keys(getStore = defaultGetStore()): Promise<IDBValidKey[]> {
   const keys: IDBValidKey[] = [];
 
-  return store
-    ._withIDBStore('readonly', (store) => {
+  return getStore('readonly')
+    .then((store) => {
       // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
       // And openKeyCursor isn't supported by Safari.
       (store.openKeyCursor || store.openCursor).call(
@@ -89,6 +74,7 @@ export function keys(store = getDefaultStore()): Promise<IDBValidKey[]> {
         keys.push(this.result.key);
         this.result.continue();
       };
+      return promisifyRequest(store.transaction);
     })
     .then(() => keys);
 }

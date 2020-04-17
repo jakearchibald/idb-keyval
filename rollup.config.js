@@ -1,10 +1,15 @@
 import { promises as fsp } from 'fs';
+import { basename } from 'path';
+import { promisify } from 'util';
 import simpleTS from './lib/simple-ts';
 import del from 'del';
 import { terser } from 'rollup-plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
+import glob from 'glob';
+
+const globP = promisify(glob);
 
 function removeDefs() {
   return {
@@ -36,6 +41,7 @@ export default async function ({ watch }) {
   await del('dist');
 
   return [
+    // Main builds
     {
       input: 'src/index.ts',
       plugins: [simpleTS('test', { watch })],
@@ -61,6 +67,7 @@ export default async function ({ watch }) {
         },
       ],
     },
+    // Compat builds
     {
       input: 'src/index.ts',
       external: (id) => {
@@ -113,6 +120,24 @@ export default async function ({ watch }) {
         },
       ],
     },
+    // Size tests
+    ...(await globP('size-tests/*.js').then((paths) =>
+      paths.map((path) => ({
+        input: path,
+        plugins: [
+          terser({
+            compress: { ecma: 2020 },
+          }),
+        ],
+        output: [
+          {
+            file: `dist/size-tests/${basename(path)}`,
+            format: 'es',
+          },
+        ],
+      })),
+    )),
+    // Test build
     {
       input: 'test/index.ts',
       plugins: [
