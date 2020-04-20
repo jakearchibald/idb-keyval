@@ -18,11 +18,15 @@ export function createStore(dbName: string, storeName: string) {
     dbp.then((db) => db.transaction(storeName, txMode).objectStore(storeName));
 }
 
-let store: (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
+let defaultGetStoreFunc:
+  | ((txMode: IDBTransactionMode) => Promise<IDBObjectStore>)
+  | undefined;
 
 function defaultGetStore() {
-  if (!store) store = createStore('keyval-store', 'keyval');
-  return store;
+  if (!defaultGetStoreFunc) {
+    defaultGetStoreFunc = createStore('keyval-store', 'keyval');
+  }
+  return defaultGetStoreFunc;
 }
 
 export function get(

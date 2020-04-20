@@ -47,7 +47,7 @@ export default async function ({ watch }) {
       plugins: [simpleTS('test', { watch })],
       output: [
         {
-          file: 'dist/esm/index.mjs',
+          file: 'dist/esm/index.js',
           format: 'es',
         },
         {
@@ -79,7 +79,7 @@ export default async function ({ watch }) {
       ],
       output: [
         {
-          file: 'dist/esm-compat/index.mjs',
+          file: 'dist/esm-compat/index.js',
           format: 'es',
         },
       ],
