@@ -5,6 +5,7 @@
     "main": "./dist/idb-keyval-cjs.js",
     "module": "./dist/idb-keyval.mjs",
     "types": "./dist/idb-keyval.d.ts",
+    "sideEffects": false,
     "scripts": {
         "build": "del dist && rollup -c && npm run compress-iife && npm run create-compat && npm run create-cjs-compat && npm run compress-amd",
         "compress-iife": "uglifyjs --compress --mangle -o dist/idb-keyval-iife.min.js dist/idb-keyval-iife.js",
