@@ -38,6 +38,14 @@ export function get<Type>(key: IDBValidKey, store = getDefaultStore()): Promise<
   }).then(() => req.result);
 }
 
+export function getMultiple<Type>(keys: IDBValidKey[], store = getDefaultStore()): Promise<Type[]> {
+  let reqs: IDBRequest[]
+
+  return store._withIDBStore('readonly', store => {
+    reqs = keys.map(key => store.get(key))
+  }).then(() => reqs.map(req => req.result))
+}
+
 export function set(key: IDBValidKey, value: any, store = getDefaultStore()): Promise<void> {
   return store._withIDBStore('readwrite', store => {
     store.put(value, key);
