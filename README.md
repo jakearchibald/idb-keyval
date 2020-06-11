@@ -43,6 +43,18 @@ get('hello').then(val => console.log(val));
 
 If there is no 'hello' key, then `val` will be `undefined`.
 
+
+### getMultiple:
+
+```js
+import { getMultiple } from 'idb-keyval';
+
+// logs: "world"
+getMultiple(['hello1', 'hello2']).then(([val1, val2]) => console.log(val1, val2));
+```
+
+If there is no 'hello1' key, then `val1` will be `undefined`, and so on for each other key and value.
+
 ### keys:
 
 ```js
