@@ -45,7 +45,7 @@ export default async function ({ watch }) {
     return {
       input: 'test/index.ts',
       plugins: [
-        simpleTS('test', { noBuild: true, watch }),
+        simpleTS('test', { watch }),
         commonjs(),
         resolve(),
         // Copy HTML file
@@ -65,7 +65,11 @@ export default async function ({ watch }) {
           format: 'es',
         },
       ],
-      watch: { clearScreen: false },
+      watch: {
+        clearScreen: false,
+        // Don't watch the ts files. Instead we watch the output from the ts compiler.
+        exclude: ['**/*.ts', '**/*.tsx'],
+      },
     };
 
   return [
