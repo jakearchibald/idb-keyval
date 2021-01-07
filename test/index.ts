@@ -8,6 +8,10 @@ import {
   clear,
   createStore,
   keys,
+  values,
+  entries,
+  setMany,
+  update,
 } from '../src';
 
 const { assert } = chai;
@@ -220,6 +224,168 @@ mocha.setup('tdd');
       await set(123, '456', customStore);
       await set('hello', 'world', customStore);
       assert.deepEqual(await keys(customStore), [123, 'hello'], `Got keys`);
+    });
+  });
+
+  suite('values', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      await set('foo', 'bar');
+      await set(123, '456');
+      assert.deepEqual(await values(), ['456', 'bar'], `Got values`);
+    });
+
+    test('custom store', async () => {
+      await set('foo', 'bar');
+      await set(123, '456', customStore);
+      await set('hello', 'world', customStore);
+      assert.deepEqual(
+        await values(customStore),
+        ['456', 'world'],
+        `Got values`,
+      );
+    });
+  });
+
+  suite('entries', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      await set('foo', 'bar');
+      await set(123, '456');
+      assert.deepEqual(
+        await entries(),
+        [
+          [123, '456'],
+          ['foo', 'bar'],
+        ],
+        `Got entries`,
+      );
+    });
+
+    test('custom store', async () => {
+      await set('foo', 'bar');
+      await set(123, '456', customStore);
+      await set('hello', 'world', customStore);
+      assert.deepEqual(
+        await entries(customStore),
+        [
+          [123, '456'],
+          ['hello', 'world'],
+        ],
+        `Got entries`,
+      );
+    });
+  });
+
+  suite('setMany', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+      ]);
+      assert.deepEqual(
+        await entries(),
+        [
+          [123, '456'],
+          ['foo', 'bar'],
+        ],
+        `Got entries`,
+      );
+    });
+
+    test('zero entries', async () => {
+      try {
+        await setMany([]);
+      } catch (err) {
+        assert.fail('Should not error with no entries');
+      }
+
+      assert.deepEqual(await entries(), [], `Got entries`);
+    });
+
+    test('custom store', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+      ]);
+      await setMany(
+        [
+          ['hello', 'world'],
+          [456, '789'],
+        ],
+        customStore,
+      );
+
+      assert.deepEqual(
+        await entries(),
+        [
+          [123, '456'],
+          ['foo', 'bar'],
+        ],
+        `Got entries`,
+      );
+      assert.deepEqual(
+        await entries(customStore),
+        [
+          [456, '789'],
+          ['hello', 'world'],
+        ],
+        `Got custom store entries`,
+      );
+    });
+  });
+
+  suite('update', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      const increment: (old: number | undefined) => number = (old) =>
+        (old || 0) + 1;
+
+      await Promise.all([
+        update('count', increment),
+        update('count', increment),
+        update('count', increment),
+      ]);
+
+      assert.strictEqual(await get('count'), 3, 'Count');
+    });
+
+    test('error types', async () => {
+      try {
+        await update('count', () => document);
+        assert.fail('Expected throw');
+      } catch (err) {
+        assert.strictEqual(
+          (err as DOMException).name,
+          'DataCloneError',
+          'Error is correct type',
+        );
+      }
+    });
+
+    test('custom store', async () => {
+      const increment: (old: number | undefined) => number = (old) =>
+        (old || 0) + 1;
+
+      await Promise.all([
+        update('count', increment),
+        update('count', increment),
+        update('count', increment),
+        update('count', increment, customStore),
+        update('count', increment, customStore),
+      ]);
+
+      assert.strictEqual(await get('count'), 3, 'Count');
+      assert.strictEqual(
+        await get('count', customStore),
+        2,
+        'Custom store count',
+      );
     });
   });
 
