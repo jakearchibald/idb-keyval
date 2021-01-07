@@ -1,4 +1,4 @@
-function promisifyRequest<T = undefined>(
+export function promisifyRequest<T = undefined>(
   request: IDBRequest<T> | IDBTransaction,
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {

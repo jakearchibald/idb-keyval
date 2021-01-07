@@ -6,7 +6,7 @@ import del from 'del';
 import { terser } from 'rollup-plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 import glob from 'glob';
 
 const globP = promisify(glob);
@@ -22,7 +22,7 @@ function removeDefs() {
 }
 
 function getBabelPlugin({ useESModules = false }) {
-  return babel({
+  return getBabelOutputPlugin({
     presets: [['@babel/preset-env', { targets: { ie: '10' } }]],
     plugins: [
       [
@@ -32,19 +32,47 @@ function getBabelPlugin({ useESModules = false }) {
         },
       ],
     ],
-    extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts'],
     runtimeHelpers: true,
+    allowAllFormats: true,
   });
 }
 
 export default async function ({ watch }) {
+  const devBuild = watch;
   await del('dist');
+
+  if (devBuild)
+    return {
+      input: 'test/index.ts',
+      plugins: [
+        simpleTS('test', { noBuild: true, watch }),
+        commonjs(),
+        resolve(),
+        // Copy HTML file
+        {
+          async generateBundle() {
+            this.emitFile({
+              type: 'asset',
+              source: await fsp.readFile('test/index.html'),
+              fileName: 'index.html',
+            });
+          },
+        },
+      ],
+      output: [
+        {
+          file: 'dist/test/index.js',
+          format: 'es',
+        },
+      ],
+      watch: { clearScreen: false },
+    };
 
   return [
     // Main builds
     {
       input: 'src/index.ts',
-      plugins: [simpleTS('test', { watch })],
+      plugins: [simpleTS('src')],
       output: [
         {
           file: 'dist/esm/index.js',
@@ -58,6 +86,7 @@ export default async function ({ watch }) {
           file: 'dist/iife/index-min.js',
           format: 'iife',
           name: 'idbKeyval',
+          esModule: false,
           plugins: [
             terser({
               compress: { ecma: 2020 },
@@ -73,45 +102,25 @@ export default async function ({ watch }) {
       external: (id) => {
         if (id.startsWith('@babel/runtime')) return true;
       },
-      plugins: [
-        simpleTS('test', { noBuild: true }),
-        getBabelPlugin({ useESModules: true }),
-      ],
+      plugins: [simpleTS('src', { noBuild: true })],
       output: [
         {
           file: 'dist/esm-compat/index.js',
           format: 'es',
+          plugins: [getBabelPlugin({ useESModules: true })],
         },
-      ],
-    },
-    {
-      input: 'src/index.ts',
-      external: (id) => {
-        if (id.startsWith('@babel/runtime')) return true;
-      },
-      plugins: [
-        simpleTS('test', { noBuild: true }),
-        getBabelPlugin({ useESModules: false }),
-      ],
-      output: [
         {
           file: 'dist/cjs-compat/index.js',
           format: 'cjs',
+          plugins: [getBabelPlugin({ useESModules: false })],
         },
-      ],
-    },
-    {
-      input: 'src/index.ts',
-      plugins: [
-        simpleTS('test', { noBuild: true }),
-        getBabelPlugin({ useESModules: true }),
-      ],
-      output: [
         {
           file: 'dist/iife-compat/index-min.js',
           format: 'iife',
           name: 'idbKeyval',
+          esModule: false,
           plugins: [
+            getBabelPlugin({ useESModules: false }),
             terser({
               compress: { ecma: 5 },
             }),
@@ -137,30 +146,5 @@ export default async function ({ watch }) {
         ],
       })),
     )),
-    // Test build
-    {
-      input: 'test/index.ts',
-      plugins: [
-        simpleTS('test', { noBuild: true }),
-        commonjs(),
-        resolve(),
-        // Copy HTML file
-        {
-          async generateBundle() {
-            this.emitFile({
-              type: 'asset',
-              source: await fsp.readFile('test/index.html'),
-              fileName: 'index.html',
-            });
-          },
-        },
-      ],
-      output: [
-        {
-          file: 'dist/test/index.js',
-          format: 'es',
-        },
-      ],
-    },
   ];
 }
