@@ -35,12 +35,12 @@ function defaultGetStore(): StoreGetter {
  * Get a value by its key.
  *
  * @param key
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function get(
+export function get<T = any>(
   key: IDBValidKey,
   customStore = defaultGetStore(),
-): Promise<any> {
+): Promise<T> {
   return customStore('readonly').then((store) =>
     promisifyRequest(store.get(key)),
   );
@@ -51,7 +51,7 @@ export function get(
  *
  * @param key
  * @param value
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function set(
   key: IDBValidKey,
@@ -68,7 +68,7 @@ export function set(
  * Set multiple values at once. This is faster than calling set() multiple times.
  *
  * @param entries Array of entries, where each entry is an array of `[key, value]`.
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function setMany(
   entries: [IDBValidKey, any][],
@@ -85,11 +85,11 @@ export function setMany(
  *
  * @param key
  * @param updater A callback that takes the old value and returns a new value.
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function update(
+export function update<T = any>(
   key: IDBValidKey,
-  updater: (oldValue: any) => any,
+  updater: (oldValue: T) => T,
   customStore = defaultGetStore(),
 ): Promise<void> {
   return customStore('readwrite').then((store) => {
@@ -104,7 +104,7 @@ export function update(
  * Delete a particular key from the store.
  *
  * @param key
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function del(
   key: IDBValidKey,
@@ -119,7 +119,7 @@ export function del(
 /**
  * Clear all values in the store.
  *
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function clear(customStore = defaultGetStore()): Promise<void> {
   return customStore('readwrite').then((store) => {
@@ -147,7 +147,7 @@ function eachCursor(
 /**
  * Get all keys in the store.
  *
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function keys(customStore = defaultGetStore()): Promise<IDBValidKey[]> {
   const items: IDBValidKey[] = [];
@@ -160,7 +160,7 @@ export function keys(customStore = defaultGetStore()): Promise<IDBValidKey[]> {
 /**
  * Get all values in the store.
  *
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function values(
   customStore = defaultGetStore(),
@@ -175,7 +175,7 @@ export function values(
 /**
  * Get all entries in the store. Each entry is an array of `[key, value]`.
  *
- * @param customStore Method to get a custom store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function entries(
   customStore = defaultGetStore(),
