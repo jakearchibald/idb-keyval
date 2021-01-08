@@ -9,4 +9,4 @@ import {
   setMany,
   update,
 } from '../dist/esm/index.js';
-console.log(get, set, del, clear, keys, values, entries, setMany, update);
+a(get, set, del, clear, keys, values, entries, setMany, update);

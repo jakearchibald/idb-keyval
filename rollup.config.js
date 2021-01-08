@@ -6,7 +6,7 @@ import del from 'del';
 import { terser } from 'rollup-plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import { getBabelOutputPlugin } from '@rollup/plugin-babel';
+import babel, { getBabelOutputPlugin } from '@rollup/plugin-babel';
 import glob from 'glob';
 
 const globP = promisify(glob);
@@ -21,18 +21,11 @@ function removeDefs() {
   };
 }
 
-function getBabelPlugin({ useESModules = false }) {
+const babelPreset = [['@babel/preset-env', { targets: { ie: '10' } }]];
+
+function getBabelPlugin() {
   return getBabelOutputPlugin({
-    presets: [['@babel/preset-env', { targets: { ie: '10' } }]],
-    plugins: [
-      [
-        '@babel/plugin-transform-runtime',
-        {
-          useESModules,
-        },
-      ],
-    ],
-    runtimeHelpers: true,
+    presets: babelPreset,
     allowAllFormats: true,
   });
 }
@@ -47,13 +40,28 @@ export default async function ({ watch }) {
       plugins: [
         simpleTS('test', { watch }),
         commonjs(),
+        // When testing IE10
+        // babel({
+        //   presets: babelPreset,
+        //   babelHelpers: 'runtime',
+        //   extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts'],
+        //   plugins: [
+        //     [
+        //       '@babel/plugin-transform-runtime',
+        //       {
+        //         useESModules: true,
+        //       },
+        //     ],
+        //   ],
+        //   exclude: /node_modules/,
+        // }),
         resolve(),
         // Copy HTML file
         {
           async generateBundle() {
             this.emitFile({
               type: 'asset',
-              source: await fsp.readFile('test/index.html'),
+              source: await fsp.readFile(`test/index.html`),
               fileName: 'index.html',
             });
           },
@@ -111,12 +119,12 @@ export default async function ({ watch }) {
         {
           file: 'dist/esm-compat/index.js',
           format: 'es',
-          plugins: [getBabelPlugin({ useESModules: true })],
+          plugins: [getBabelPlugin()],
         },
         {
           file: 'dist/cjs-compat/index.js',
           format: 'cjs',
-          plugins: [getBabelPlugin({ useESModules: false })],
+          plugins: [getBabelPlugin()],
         },
         {
           file: 'dist/iife-compat/index-min.js',
@@ -124,7 +132,7 @@ export default async function ({ watch }) {
           name: 'idbKeyval',
           esModule: false,
           plugins: [
-            getBabelPlugin({ useESModules: false }),
+            getBabelPlugin(),
             terser({
               compress: { ecma: 5 },
             }),

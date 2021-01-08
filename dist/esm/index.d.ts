@@ -18,6 +18,7 @@ export declare function get<T = any>(key: IDBValidKey, customStore?: StoreGetter
 export declare function set(key: IDBValidKey, value: any, customStore?: StoreGetter): Promise<void>;
 /**
  * Set multiple values at once. This is faster than calling set() multiple times.
+ * It's also atomic – if one of the pairs can't be added, none will be added.
  *
  * @param entries Array of entries, where each entry is an array of `[key, value]`.
  * @param customStore Method to get a custom store. Use with caution (see the docs).

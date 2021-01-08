@@ -47,6 +47,7 @@ function set(key, value, customStore = defaultGetStore()) {
 }
 /**
  * Set multiple values at once. This is faster than calling set() multiple times.
+ * It's also atomic – if one of the pairs can't be added, none will be added.
  *
  * @param entries Array of entries, where each entry is an array of `[key, value]`.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
@@ -65,12 +66,21 @@ function setMany(entries, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function update(key, updater, customStore = defaultGetStore()) {
-    return customStore('readwrite').then((store) => {
-        return promisifyRequest(store.get(key)).then((oldValue) => {
-            store.put(updater(oldValue), key);
-            return promisifyRequest(store.transaction);
-        });
-    });
+    return customStore('readwrite').then((store) => 
+    // Need to create the promise manually.
+    // If I try to chain promises, the transaction closes in browsers
+    // that use a promise polyfill (IE10/11).
+    new Promise((resolve, reject) => {
+        store.get(key).onsuccess = function () {
+            try {
+                store.put(updater(this.result), key);
+                resolve(promisifyRequest(store.transaction));
+            }
+            catch (err) {
+                reject(err);
+            }
+        };
+    }));
 }
 /**
  * Delete a particular key from the store.
