@@ -24,7 +24,7 @@ Now you can require/import `idb-keyval`:
 import { get, set } from 'idb-keyval';
 ```
 
-If you're targeting older versions of IE, you may have more luck with:
+If you're targeting IE10/11, use the compat version, and import a `Promise` polyfill.
 
 ```js
 // Import a Promise polyfill
