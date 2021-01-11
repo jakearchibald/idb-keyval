@@ -64,7 +64,7 @@ import { set } from 'idb-keyval';
 set('hello', 'world');
 ```
 
-Since this is IDB-backed, you can store anything structured-clonable (numbers, arrays, objects, dates, blobs etc). Keys can be numbers, strings, `Date`s, (IDB also allows arrays of those values, but IE doesn't support it).
+Since this is IDB-backed, you can store anything structured-clonable (numbers, arrays, objects, dates, blobs etc), although old Edge doesn't support `null`. Keys can be numbers, strings, `Date`s, (IDB also allows arrays of those values, but IE doesn't support it).
 
 All methods return promises:
 
