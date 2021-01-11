@@ -25,6 +25,13 @@ export declare function set(key: IDBValidKey, value: any, customStore?: StoreGet
  */
 export declare function setMany(entries: [IDBValidKey, any][], customStore?: StoreGetter): Promise<void>;
 /**
+ * Get multiple values by their keys
+ *
+ * @param keys
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+export declare function getMany(keys: IDBValidKey[], customStore?: StoreGetter): Promise<any[]>;
+/**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
  * @param key

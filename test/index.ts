@@ -12,6 +12,7 @@ import {
   entries,
   setMany,
   update,
+  getMany,
 } from '../src';
 
 const { assert } = chai;
@@ -335,6 +336,43 @@ mocha.setup('tdd');
           ['hello', 'world'],
         ],
         `Got custom store entries`,
+      );
+    });
+  });
+
+  suite('getMany', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+        ['hello', 'world'],
+      ]);
+
+      assert.deepEqual(
+        await getMany(['foo', 123, 'yo']),
+        ['bar', '456', undefined],
+        `Got values`,
+      );
+    });
+
+    test('zero entries', async () => {
+      assert.deepEqual(await getMany([]), [], `Got values`);
+    });
+
+    test('custom store', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+        ['hello', 'world'],
+      ]);
+      await set('yo', 'ok', customStore);
+
+      assert.deepEqual(
+        await getMany(['yo', 'hello'], customStore),
+        ['ok', undefined],
+        `Got values`,
       );
     });
   });

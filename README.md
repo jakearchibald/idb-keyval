@@ -110,6 +110,24 @@ setMany([
 
 This operation is also atomic – if one of the pairs can't be added, none will be added.
 
+### getMany:
+
+Get many keys at once. This is faster than calling `get` multiple times. Resolves with an array of values.
+
+```js
+import { get, getMany } from 'idb-keyval';
+
+// Instead of:
+Promise.all([get(123), get('hello')]).then(([firstVal, secondVal]) =>
+  console.log(firstVal, secondVal),
+);
+
+// It's faster to do:
+getMany([123, 'hello']).then(([firstVal, secondVal]) =>
+  console.log(firstVal, secondVal),
+);
+```
+
 ### update:
 
 Transforming a value (eg incrementing a number) using `get` and `set` is risky, as both `get` and `set` are async and non-atomic:

@@ -85,6 +85,22 @@ function setMany(entries) {
   });
 }
 /**
+ * Get multiple values by their keys
+ *
+ * @param keys
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+
+
+function getMany(keys) {
+  var customStore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultGetStore();
+  return customStore('readonly').then(function (store) {
+    return Promise.all(keys.map(function (key) {
+      return promisifyRequest(store.get(key));
+    }));
+  });
+}
+/**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
  * @param key
@@ -204,4 +220,4 @@ function entries() {
   });
 }
 
-export { clear, createStore, del, entries, get, keys, promisifyRequest, set, setMany, update, values };
+export { clear, createStore, del, entries, get, getMany, keys, promisifyRequest, set, setMany, update, values };

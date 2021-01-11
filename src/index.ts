@@ -82,6 +82,21 @@ export function setMany(
 }
 
 /**
+ * Get multiple values by their keys
+ *
+ * @param keys
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+export function getMany(
+  keys: IDBValidKey[],
+  customStore = defaultGetStore(),
+): Promise<any[]> {
+  return customStore('readonly').then((store) =>
+    Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
+  );
+}
+
+/**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
  * @param key

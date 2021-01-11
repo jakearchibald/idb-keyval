@@ -55,6 +55,15 @@ function setMany(entries, customStore = defaultGetStore()) {
     });
 }
 /**
+ * Get multiple values by their keys
+ *
+ * @param keys
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function getMany(keys, customStore = defaultGetStore()) {
+    return customStore('readonly').then((store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
+}
+/**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
  * @param key
@@ -142,4 +151,4 @@ function entries(customStore = defaultGetStore()) {
     return eachCursor(customStore, (cursor) => items.push([cursor.key, cursor.value])).then(() => items);
 }
 
-export { clear, createStore, del, entries, get, keys, promisifyRequest, set, setMany, update, values };
+export { clear, createStore, del, entries, get, getMany, keys, promisifyRequest, set, setMany, update, values };

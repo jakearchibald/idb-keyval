@@ -59,6 +59,15 @@ function setMany(entries, customStore = defaultGetStore()) {
     });
 }
 /**
+ * Get multiple values by their keys
+ *
+ * @param keys
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function getMany(keys, customStore = defaultGetStore()) {
+    return customStore('readonly').then((store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
+}
+/**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
  * @param key
@@ -151,6 +160,7 @@ exports.createStore = createStore;
 exports.del = del;
 exports.entries = entries;
 exports.get = get;
+exports.getMany = getMany;
 exports.keys = keys;
 exports.promisifyRequest = promisifyRequest;
 exports.set = set;
