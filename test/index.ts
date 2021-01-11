@@ -72,7 +72,7 @@ mocha.setup('tdd');
       );
     });
 
-    test('array keys', async () => {
+    test('array keys - expected fail in IE', async () => {
       await set([123, '456'], 'hello');
       assert.strictEqual(
         await get([123, '456']),
