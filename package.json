@@ -6,6 +6,7 @@
   "module": "./dist/esm/index.js",
   "exports": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "rollup -c && node --experimental-modules lib/size-report.mjs",
     "dev": "rollup -cw & serve"
