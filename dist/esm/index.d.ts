@@ -7,7 +7,7 @@ declare type StoreGetter = (txMode: IDBTransactionMode) => Promise<IDBObjectStor
  * @param key
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function get<T = any>(key: IDBValidKey, customStore?: StoreGetter): Promise<T>;
+export declare function get<T = any>(key: IDBValidKey, customStore?: StoreGetter): Promise<T | undefined>;
 /**
  * Set a value with a key.
  *
@@ -31,7 +31,7 @@ export declare function setMany(entries: [IDBValidKey, any][], customStore?: Sto
  * @param updater A callback that takes the old value and returns a new value.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function update<T = any>(key: IDBValidKey, updater: (oldValue: T) => T, customStore?: StoreGetter): Promise<void>;
+export declare function update<T = any>(key: IDBValidKey, updater: (oldValue: T | undefined) => T, customStore?: StoreGetter): Promise<void>;
 /**
  * Delete a particular key from the store.
  *

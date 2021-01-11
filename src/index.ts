@@ -40,7 +40,7 @@ function defaultGetStore(): StoreGetter {
 export function get<T = any>(
   key: IDBValidKey,
   customStore = defaultGetStore(),
-): Promise<T> {
+): Promise<T | undefined> {
   return customStore('readonly').then((store) =>
     promisifyRequest(store.get(key)),
   );
@@ -90,7 +90,7 @@ export function setMany(
  */
 export function update<T = any>(
   key: IDBValidKey,
-  updater: (oldValue: T) => T,
+  updater: (oldValue: T | undefined) => T,
   customStore = defaultGetStore(),
 ): Promise<void> {
   return customStore('readwrite').then(
