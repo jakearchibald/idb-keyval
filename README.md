@@ -216,7 +216,7 @@ By default, the methods above use an IndexedDB database named `keyval-store` and
 
 ## Updating
 
-# Updating from 3.x
+### Updating from 3.x
 
 The changes between 3.x and 4.x related to custom stores.
 
@@ -241,7 +241,7 @@ set('foo', 'bar', customStore);
 
 For more details, see [custom stores](./custom-stores.md).
 
-# Updating from 2.x
+### Updating from 2.x
 
 2.x exported an object with methods:
 
