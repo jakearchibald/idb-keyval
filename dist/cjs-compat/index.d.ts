@@ -1,6 +1,6 @@
 export declare function promisifyRequest<T = undefined>(request: IDBRequest<T> | IDBTransaction): Promise<T>;
-export declare function createStore(dbName: string, storeName: string): (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
-declare type StoreGetter = (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
+export declare function createStore(dbName: string, storeName: string): StoreGetter;
+export declare type StoreGetter = (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
 /**
  * Get a value by its key.
  *
@@ -70,5 +70,4 @@ export declare function values(customStore?: StoreGetter): Promise<IDBValidKey[]
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export declare function entries(customStore?: StoreGetter): Promise<[IDBValidKey, any][]>;
-export {};
 //# sourceMappingURL=index.d.ts.map

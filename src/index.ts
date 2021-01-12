@@ -9,7 +9,7 @@ export function promisifyRequest<T = undefined>(
   });
 }
 
-export function createStore(dbName: string, storeName: string) {
+export function createStore(dbName: string, storeName: string): StoreGetter {
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
@@ -18,13 +18,13 @@ export function createStore(dbName: string, storeName: string) {
     dbp.then((db) => db.transaction(storeName, txMode).objectStore(storeName));
 }
 
-let defaultGetStoreFunc:
-  | ((txMode: IDBTransactionMode) => Promise<IDBObjectStore>)
-  | undefined;
+let defaultGetStoreFunc: StoreGetter | undefined;
 
-type StoreGetter = (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
+export type StoreGetter = (
+  txMode: IDBTransactionMode,
+) => Promise<IDBObjectStore>;
 
-function defaultGetStore(): StoreGetter {
+function defaultGetStore() {
   if (!defaultGetStoreFunc) {
     defaultGetStoreFunc = createStore('keyval-store', 'keyval');
   }
