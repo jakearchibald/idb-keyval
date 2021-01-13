@@ -15,16 +15,15 @@ export function createStore(dbName: string, storeName: string): UseStore {
   const dbp = promisifyRequest(request);
 
   return (txMode, callback) =>
-    // TODO: I'm not sure why I have to cast to any here. Maybe some TypeScript expert can help?
     dbp.then((db) =>
       callback(db.transaction(storeName, txMode).objectStore(storeName)),
-    ) as any;
+    );
 }
 
 export type UseStore = <T>(
   txMode: IDBTransactionMode,
-  callback: (store: IDBObjectStore) => T,
-) => T extends PromiseLike<any> ? T : Promise<T>;
+  callback: (store: IDBObjectStore) => T | PromiseLike<T>,
+) => Promise<T>;
 
 let defaultGetStoreFunc: UseStore | undefined;
 

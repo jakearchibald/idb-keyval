@@ -27,11 +27,9 @@ function createStore(dbName, storeName) {
 
   var dbp = promisifyRequest(request);
   return function (txMode, callback) {
-    return (// TODO: I'm not sure why I have to cast to any here. Maybe some TypeScript expert can help?
-      dbp.then(function (db) {
-        return callback(db.transaction(storeName, txMode).objectStore(storeName));
-      })
-    );
+    return dbp.then(function (db) {
+      return callback(db.transaction(storeName, txMode).objectStore(storeName));
+    });
   };
 }
 

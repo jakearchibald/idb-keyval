@@ -14,9 +14,7 @@ function createStore(dbName, storeName) {
     const request = indexedDB.open(dbName);
     request.onupgradeneeded = () => request.result.createObjectStore(storeName);
     const dbp = promisifyRequest(request);
-    return (txMode, callback) => 
-    // TODO: I'm not sure why I have to cast to any here. Maybe some TypeScript expert can help?
-    dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
+    return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 }
 let defaultGetStoreFunc;
 function defaultGetStore() {
