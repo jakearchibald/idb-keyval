@@ -36,7 +36,7 @@ This restriction is due to how IndexedDB performs schema migrations. If you need
 
 Ok, at this point it really is much better to use something like [IDB on NPM](https://www.npmjs.com/package/idb). But anyway:
 
-A custom store in this library is just a function that takes `"readonly"` or `"readwrite"`, and returns a promise for an IDB store. Here's the implementation for `createStore`:
+A custom store in this library is just a function that takes `"readonly"` or `"readwrite"`, a callback that provides an IDB store, and returns whatever that callback returns. Here's the implementation for `createStore`:
 
 ```js
 import { promisifyRequest } from 'idb-keyval';
@@ -46,8 +46,10 @@ function createStore(dbName, storeName) {
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
 
-  return (txMode) =>
-    dbp.then((db) => db.transaction(storeName, txMode).objectStore(storeName));
+  return (txMode, callback) =>
+    dbp.then((db) =>
+      callback(db.transaction(storeName, txMode).objectStore(storeName)),
+    );
 }
 ```
 

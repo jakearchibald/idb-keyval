@@ -9,22 +9,26 @@ export function promisifyRequest<T = undefined>(
   });
 }
 
-export function createStore(dbName: string, storeName: string) {
+export function createStore(dbName: string, storeName: string): UseStore {
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
 
-  return (txMode: IDBTransactionMode) =>
-    dbp.then((db) => db.transaction(storeName, txMode).objectStore(storeName));
+  return (txMode, callback) =>
+    // TODO: I'm not sure why I have to cast to any here. Maybe some TypeScript expert can help?
+    dbp.then((db) =>
+      callback(db.transaction(storeName, txMode).objectStore(storeName)),
+    ) as any;
 }
 
-let defaultGetStoreFunc:
-  | ((txMode: IDBTransactionMode) => Promise<IDBObjectStore>)
-  | undefined;
+export type UseStore = <T>(
+  txMode: IDBTransactionMode,
+  callback: (store: IDBObjectStore) => T,
+) => T extends PromiseLike<any> ? T : Promise<T>;
 
-type StoreGetter = (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
+let defaultGetStoreFunc: UseStore | undefined;
 
-function defaultGetStore(): StoreGetter {
+function defaultGetStore() {
   if (!defaultGetStoreFunc) {
     defaultGetStoreFunc = createStore('keyval-store', 'keyval');
   }
@@ -41,9 +45,7 @@ export function get<T = any>(
   key: IDBValidKey,
   customStore = defaultGetStore(),
 ): Promise<T | undefined> {
-  return customStore('readonly').then((store) =>
-    promisifyRequest(store.get(key)),
-  );
+  return customStore('readonly', (store) => promisifyRequest(store.get(key)));
 }
 
 /**
@@ -58,7 +60,7 @@ export function set(
   value: any,
   customStore = defaultGetStore(),
 ): Promise<void> {
-  return customStore('readwrite').then((store) => {
+  return customStore('readwrite', (store) => {
     store.put(value, key);
     return promisifyRequest(store.transaction);
   });
@@ -75,7 +77,7 @@ export function setMany(
   entries: [IDBValidKey, any][],
   customStore = defaultGetStore(),
 ): Promise<void> {
-  return customStore('readwrite').then((store) => {
+  return customStore('readwrite', (store) => {
     entries.forEach((entry) => store.put(entry[1], entry[0]));
     return promisifyRequest(store.transaction);
   });
@@ -91,7 +93,7 @@ export function getMany(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
 ): Promise<any[]> {
-  return customStore('readonly').then((store) =>
+  return customStore('readonly', (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
   );
 }
@@ -108,7 +110,8 @@ export function update<T = any>(
   updater: (oldValue: T | undefined) => T,
   customStore = defaultGetStore(),
 ): Promise<void> {
-  return customStore('readwrite').then(
+  return customStore(
+    'readwrite',
     (store) =>
       // Need to create the promise manually.
       // If I try to chain promises, the transaction closes in browsers
@@ -136,7 +139,7 @@ export function del(
   key: IDBValidKey,
   customStore = defaultGetStore(),
 ): Promise<void> {
-  return customStore('readwrite').then((store) => {
+  return customStore('readwrite', (store) => {
     store.delete(key);
     return promisifyRequest(store.transaction);
   });
@@ -148,17 +151,17 @@ export function del(
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function clear(customStore = defaultGetStore()): Promise<void> {
-  return customStore('readwrite').then((store) => {
+  return customStore('readwrite', (store) => {
     store.clear();
     return promisifyRequest(store.transaction);
   });
 }
 
 function eachCursor(
-  customStore: StoreGetter,
+  customStore: UseStore,
   callback: (cursor: IDBCursorWithValue) => void,
 ): Promise<void> {
-  return customStore('readonly').then((store) => {
+  return customStore('readonly', (store) => {
     // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
     // And openKeyCursor isn't supported by Safari.
     store.openCursor().onsuccess = function () {

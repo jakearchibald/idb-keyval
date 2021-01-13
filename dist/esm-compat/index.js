@@ -20,10 +20,12 @@ function createStore(dbName, storeName) {
   };
 
   var dbp = promisifyRequest(request);
-  return function (txMode) {
-    return dbp.then(function (db) {
-      return db.transaction(storeName, txMode).objectStore(storeName);
-    });
+  return function (txMode, callback) {
+    return (// TODO: I'm not sure why I have to cast to any here. Maybe some TypeScript expert can help?
+      dbp.then(function (db) {
+        return callback(db.transaction(storeName, txMode).objectStore(storeName));
+      })
+    );
   };
 }
 
@@ -46,7 +48,7 @@ function defaultGetStore() {
 
 function get(key) {
   var customStore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultGetStore();
-  return customStore('readonly').then(function (store) {
+  return customStore('readonly', function (store) {
     return promisifyRequest(store.get(key));
   });
 }
@@ -61,7 +63,7 @@ function get(key) {
 
 function set(key, value) {
   var customStore = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultGetStore();
-  return customStore('readwrite').then(function (store) {
+  return customStore('readwrite', function (store) {
     store.put(value, key);
     return promisifyRequest(store.transaction);
   });
@@ -77,7 +79,7 @@ function set(key, value) {
 
 function setMany(entries) {
   var customStore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultGetStore();
-  return customStore('readwrite').then(function (store) {
+  return customStore('readwrite', function (store) {
     entries.forEach(function (entry) {
       return store.put(entry[1], entry[0]);
     });
@@ -94,7 +96,7 @@ function setMany(entries) {
 
 function getMany(keys) {
   var customStore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultGetStore();
-  return customStore('readonly').then(function (store) {
+  return customStore('readonly', function (store) {
     return Promise.all(keys.map(function (key) {
       return promisifyRequest(store.get(key));
     }));
@@ -111,7 +113,7 @@ function getMany(keys) {
 
 function update(key, updater) {
   var customStore = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultGetStore();
-  return customStore('readwrite').then(function (store) {
+  return customStore('readwrite', function (store) {
     return (// Need to create the promise manually.
       // If I try to chain promises, the transaction closes in browsers
       // that use a promise polyfill (IE10/11).
@@ -138,7 +140,7 @@ function update(key, updater) {
 
 function del(key) {
   var customStore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultGetStore();
-  return customStore('readwrite').then(function (store) {
+  return customStore('readwrite', function (store) {
     store.delete(key);
     return promisifyRequest(store.transaction);
   });
@@ -152,14 +154,14 @@ function del(key) {
 
 function clear() {
   var customStore = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultGetStore();
-  return customStore('readwrite').then(function (store) {
+  return customStore('readwrite', function (store) {
     store.clear();
     return promisifyRequest(store.transaction);
   });
 }
 
 function eachCursor(customStore, callback) {
-  return customStore('readonly').then(function (store) {
+  return customStore('readonly', function (store) {
     // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
     // And openKeyCursor isn't supported by Safari.
     store.openCursor().onsuccess = function () {

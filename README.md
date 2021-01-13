@@ -44,13 +44,13 @@ import { get, set } from 'idb-keyval/dist/esm-compat';
 These built versions are also available on jsDelivr, e.g.:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/idb-keyval@4/dist/iife/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index.js"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
   import {
     get,
     set,
-  } from 'https://cdn.jsdelivr.net/npm/idb-keyval@4/dist/esm/index.js';
+  } from 'https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/esm/index.js';
 </script>
 ```
 
@@ -218,7 +218,9 @@ By default, the methods above use an IndexedDB database named `keyval-store` and
 
 ### Updating from 3.x
 
-The changes between 3.x and 4.x related to custom stores.
+The changes between 3.x and 5.x related to custom stores.
+
+(4.x was abandoned due to a Safari bug)
 
 Old way:
 

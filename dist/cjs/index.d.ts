@@ -1,13 +1,13 @@
 export declare function promisifyRequest<T = undefined>(request: IDBRequest<T> | IDBTransaction): Promise<T>;
-export declare function createStore(dbName: string, storeName: string): (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
-declare type StoreGetter = (txMode: IDBTransactionMode) => Promise<IDBObjectStore>;
+export declare function createStore(dbName: string, storeName: string): UseStore;
+export declare type UseStore = <T>(txMode: IDBTransactionMode, callback: (store: IDBObjectStore) => T) => T extends PromiseLike<any> ? T : Promise<T>;
 /**
  * Get a value by its key.
  *
  * @param key
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function get<T = any>(key: IDBValidKey, customStore?: StoreGetter): Promise<T | undefined>;
+export declare function get<T = any>(key: IDBValidKey, customStore?: UseStore): Promise<T | undefined>;
 /**
  * Set a value with a key.
  *
@@ -15,7 +15,7 @@ export declare function get<T = any>(key: IDBValidKey, customStore?: StoreGetter
  * @param value
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function set(key: IDBValidKey, value: any, customStore?: StoreGetter): Promise<void>;
+export declare function set(key: IDBValidKey, value: any, customStore?: UseStore): Promise<void>;
 /**
  * Set multiple values at once. This is faster than calling set() multiple times.
  * It's also atomic – if one of the pairs can't be added, none will be added.
@@ -23,14 +23,14 @@ export declare function set(key: IDBValidKey, value: any, customStore?: StoreGet
  * @param entries Array of entries, where each entry is an array of `[key, value]`.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function setMany(entries: [IDBValidKey, any][], customStore?: StoreGetter): Promise<void>;
+export declare function setMany(entries: [IDBValidKey, any][], customStore?: UseStore): Promise<void>;
 /**
  * Get multiple values by their keys
  *
  * @param keys
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function getMany(keys: IDBValidKey[], customStore?: StoreGetter): Promise<any[]>;
+export declare function getMany(keys: IDBValidKey[], customStore?: UseStore): Promise<any[]>;
 /**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
@@ -38,37 +38,36 @@ export declare function getMany(keys: IDBValidKey[], customStore?: StoreGetter):
  * @param updater A callback that takes the old value and returns a new value.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function update<T = any>(key: IDBValidKey, updater: (oldValue: T | undefined) => T, customStore?: StoreGetter): Promise<void>;
+export declare function update<T = any>(key: IDBValidKey, updater: (oldValue: T | undefined) => T, customStore?: UseStore): Promise<void>;
 /**
  * Delete a particular key from the store.
  *
  * @param key
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function del(key: IDBValidKey, customStore?: StoreGetter): Promise<void>;
+export declare function del(key: IDBValidKey, customStore?: UseStore): Promise<void>;
 /**
  * Clear all values in the store.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function clear(customStore?: StoreGetter): Promise<void>;
+export declare function clear(customStore?: UseStore): Promise<void>;
 /**
  * Get all keys in the store.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function keys(customStore?: StoreGetter): Promise<IDBValidKey[]>;
+export declare function keys(customStore?: UseStore): Promise<IDBValidKey[]>;
 /**
  * Get all values in the store.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function values(customStore?: StoreGetter): Promise<IDBValidKey[]>;
+export declare function values(customStore?: UseStore): Promise<IDBValidKey[]>;
 /**
  * Get all entries in the store. Each entry is an array of `[key, value]`.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function entries(customStore?: StoreGetter): Promise<[IDBValidKey, any][]>;
-export {};
+export declare function entries(customStore?: UseStore): Promise<[IDBValidKey, any][]>;
 //# sourceMappingURL=index.d.ts.map

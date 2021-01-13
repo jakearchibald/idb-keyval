@@ -10,7 +10,9 @@ function createStore(dbName, storeName) {
     const request = indexedDB.open(dbName);
     request.onupgradeneeded = () => request.result.createObjectStore(storeName);
     const dbp = promisifyRequest(request);
-    return (txMode) => dbp.then((db) => db.transaction(storeName, txMode).objectStore(storeName));
+    return (txMode, callback) => 
+    // TODO: I'm not sure why I have to cast to any here. Maybe some TypeScript expert can help?
+    dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 }
 let defaultGetStoreFunc;
 function defaultGetStore() {
@@ -26,7 +28,7 @@ function defaultGetStore() {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function get(key, customStore = defaultGetStore()) {
-    return customStore('readonly').then((store) => promisifyRequest(store.get(key)));
+    return customStore('readonly', (store) => promisifyRequest(store.get(key)));
 }
 /**
  * Set a value with a key.
@@ -36,7 +38,7 @@ function get(key, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function set(key, value, customStore = defaultGetStore()) {
-    return customStore('readwrite').then((store) => {
+    return customStore('readwrite', (store) => {
         store.put(value, key);
         return promisifyRequest(store.transaction);
     });
@@ -49,7 +51,7 @@ function set(key, value, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function setMany(entries, customStore = defaultGetStore()) {
-    return customStore('readwrite').then((store) => {
+    return customStore('readwrite', (store) => {
         entries.forEach((entry) => store.put(entry[1], entry[0]));
         return promisifyRequest(store.transaction);
     });
@@ -61,7 +63,7 @@ function setMany(entries, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function getMany(keys, customStore = defaultGetStore()) {
-    return customStore('readonly').then((store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
+    return customStore('readonly', (store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
 }
 /**
  * Update a value. This lets you see the old value and update it as an atomic operation.
@@ -71,7 +73,7 @@ function getMany(keys, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function update(key, updater, customStore = defaultGetStore()) {
-    return customStore('readwrite').then((store) => 
+    return customStore('readwrite', (store) => 
     // Need to create the promise manually.
     // If I try to chain promises, the transaction closes in browsers
     // that use a promise polyfill (IE10/11).
@@ -94,7 +96,7 @@ function update(key, updater, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function del(key, customStore = defaultGetStore()) {
-    return customStore('readwrite').then((store) => {
+    return customStore('readwrite', (store) => {
         store.delete(key);
         return promisifyRequest(store.transaction);
     });
@@ -105,13 +107,13 @@ function del(key, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function clear(customStore = defaultGetStore()) {
-    return customStore('readwrite').then((store) => {
+    return customStore('readwrite', (store) => {
         store.clear();
         return promisifyRequest(store.transaction);
     });
 }
 function eachCursor(customStore, callback) {
-    return customStore('readonly').then((store) => {
+    return customStore('readonly', (store) => {
         // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
         // And openKeyCursor isn't supported by Safari.
         store.openCursor().onsuccess = function () {
