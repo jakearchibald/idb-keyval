@@ -5,7 +5,7 @@
   "main": "./dist/cjs-compat/index.js",
   "module": "./dist/esm/index.js",
   "exports": {
-    "require": "./dist/cjs-compat/index.js",
+    "require": "./dist/cjs/index.js",
     "import": "./dist/esm/index.js"
   },
   "types": "./dist/esm/index.d.ts",
