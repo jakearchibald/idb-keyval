@@ -63,7 +63,7 @@ export declare function keys(customStore?: UseStore): Promise<IDBValidKey[]>;
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function values(customStore?: UseStore): Promise<IDBValidKey[]>;
+export declare function values(customStore?: UseStore): Promise<any[]>;
 /**
  * Get all entries in the store. Each entry is an array of `[key, value]`.
  *

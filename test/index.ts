@@ -234,7 +234,12 @@ mocha.setup('tdd');
     test('basics', async () => {
       await set('foo', 'bar');
       await set(123, '456');
-      assert.deepEqual(await values(), ['456', 'bar'], `Got values`);
+      await set(124, { foo: 'bar' });
+      assert.deepEqual(
+        await values(),
+        ['456', { foo: 'bar' }, 'bar'],
+        `Got values`,
+      );
     });
 
     test('custom store', async () => {
