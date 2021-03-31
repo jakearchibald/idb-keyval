@@ -38,13 +38,13 @@ import { get, set } from 'idb-keyval/dist/esm-compat';
 - `dist/cjs-compat/index.js` CommonJS module, transpiled for older browsers.
 - `dist/esm/index.js` EcmaScript module.
 - `dist/esm-compat/index.js` EcmaScript module, transpiled for older browsers.
-- `dist/iife/index.js` Minified plain JS, which creates an `idbKeyval` global containing all methods.
-- `dist/iife-compat/index.js` As above, but transpiled for older browsers.
+- `dist/iife/index-min.js` Minified plain JS, which creates an `idbKeyval` global containing all methods.
+- `dist/iife-compat/index-min.js` As above, but transpiled for older browsers.
 
 These built versions are also available on jsDelivr, e.g.:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
   import {
@@ -145,7 +145,7 @@ get('counter').then((val) =>
 );
 ```
 
-With the above, both `get` operations will complete first, each returning `undefined`, then each set operation will be setting `1`. You could fix the above by queuing the second `get` on the first `set`, but that isn't always each across multiple pieces of code. Instead:
+With the above, both `get` operations will complete first, each returning `undefined`, then each set operation will be setting `1`. You could fix the above by queuing the second `get` on the first `set`, but that isn't always feasible across multiple pieces of code. Instead:
 
 ```js
 // Instead:
