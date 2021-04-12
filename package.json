@@ -9,6 +9,7 @@
       "require": "./dist/cjs/index.js",
       "import": "./dist/esm/index.js"
     },
+    "./dist/*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
   "types": "./dist/esm/index.d.ts",
