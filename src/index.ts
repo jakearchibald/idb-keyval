@@ -191,7 +191,7 @@ export function keys(customStore = defaultGetStore()): Promise<IDBValidKey[]> {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function values<T = any>(customStore = defaultGetStore()): Promise<T[]> {
-  const items: any[] = [];
+  const items: T[] = [];
 
   return eachCursor(customStore, (cursor) => items.push(cursor.value)).then(
     () => items,
