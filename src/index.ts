@@ -88,10 +88,10 @@ export function setMany(
  * @param keys
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function getMany(
+export function getMany<T = any>(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
-): Promise<any[]> {
+): Promise<T[]> {
   return customStore('readonly', (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
   );
@@ -203,10 +203,10 @@ export function values<T = any>(customStore = defaultGetStore()): Promise<T[]> {
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function entries(
+export function entries<T = any>(
   customStore = defaultGetStore(),
-): Promise<[IDBValidKey, any][]> {
-  const items: [IDBValidKey, any][] = [];
+): Promise<[IDBValidKey, T][]> {
+  const items: [IDBValidKey, T][] = [];
 
   return eachCursor(customStore, (cursor) =>
     items.push([cursor.key, cursor.value]),
