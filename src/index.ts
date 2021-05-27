@@ -88,10 +88,10 @@ export function setMany(
  * @param keys
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function getMany(
+export function getMany<T = any>(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
-): Promise<any[]> {
+): Promise<T[]> {
   return customStore('readonly', (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
   );
@@ -177,12 +177,14 @@ function eachCursor(
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function keys(customStore = defaultGetStore()): Promise<IDBValidKey[]> {
-  const items: IDBValidKey[] = [];
+export function keys<KeyType extends IDBValidKey>(
+  customStore = defaultGetStore(),
+): Promise<KeyType[]> {
+  const items: KeyType[] = [];
 
-  return eachCursor(customStore, (cursor) => items.push(cursor.key)).then(
-    () => items,
-  );
+  return eachCursor(customStore, (cursor) =>
+    items.push(cursor.key as KeyType),
+  ).then(() => items);
 }
 
 /**
@@ -190,8 +192,8 @@ export function keys(customStore = defaultGetStore()): Promise<IDBValidKey[]> {
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function values(customStore = defaultGetStore()): Promise<any[]> {
-  const items: any[] = [];
+export function values<T = any>(customStore = defaultGetStore()): Promise<T[]> {
+  const items: T[] = [];
 
   return eachCursor(customStore, (cursor) => items.push(cursor.value)).then(
     () => items,
@@ -203,12 +205,12 @@ export function values(customStore = defaultGetStore()): Promise<any[]> {
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function entries(
+export function entries<KeyType extends IDBValidKey, ValueType = any>(
   customStore = defaultGetStore(),
-): Promise<[IDBValidKey, any][]> {
-  const items: [IDBValidKey, any][] = [];
+): Promise<[KeyType, ValueType][]> {
+  const items: [KeyType, ValueType][] = [];
 
   return eachCursor(customStore, (cursor) =>
-    items.push([cursor.key, cursor.value]),
+    items.push([cursor.key as KeyType, cursor.value]),
   ).then(() => items);
 }

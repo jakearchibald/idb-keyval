@@ -49,6 +49,7 @@
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
     "chai": "^4.2.0",
+    "conditional-type-checks": "^1.0.5",
     "del": "^6.0.0",
     "filesize": "^6.1.0",
     "glob": "^7.1.6",
