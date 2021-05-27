@@ -30,7 +30,7 @@ export declare function setMany(entries: [IDBValidKey, any][], customStore?: Use
  * @param keys
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function getMany(keys: IDBValidKey[], customStore?: UseStore): Promise<any[]>;
+export declare function getMany<T = any>(keys: IDBValidKey[], customStore?: UseStore): Promise<T[]>;
 /**
  * Update a value. This lets you see the old value and update it as an atomic operation.
  *
@@ -57,17 +57,17 @@ export declare function clear(customStore?: UseStore): Promise<void>;
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function keys(customStore?: UseStore): Promise<IDBValidKey[]>;
+export declare function keys<KeyType extends IDBValidKey>(customStore?: UseStore): Promise<KeyType[]>;
 /**
  * Get all values in the store.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function values(customStore?: UseStore): Promise<any[]>;
+export declare function values<T = any>(customStore?: UseStore): Promise<T[]>;
 /**
  * Get all entries in the store. Each entry is an array of `[key, value]`.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export declare function entries(customStore?: UseStore): Promise<[IDBValidKey, any][]>;
+export declare function entries<KeyType extends IDBValidKey, ValueType = any>(customStore?: UseStore): Promise<[KeyType, ValueType][]>;
 //# sourceMappingURL=index.d.ts.map
