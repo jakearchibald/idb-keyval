@@ -177,12 +177,14 @@ function eachCursor(
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function keys(customStore = defaultGetStore()): Promise<IDBValidKey[]> {
-  const items: IDBValidKey[] = [];
+export function keys<KeyType extends IDBValidKey>(
+  customStore = defaultGetStore(),
+): Promise<KeyType[]> {
+  const items: KeyType[] = [];
 
-  return eachCursor(customStore, (cursor) => items.push(cursor.key)).then(
-    () => items,
-  );
+  return eachCursor(customStore, (cursor) =>
+    items.push(cursor.key as KeyType),
+  ).then(() => items);
 }
 
 /**
@@ -203,12 +205,12 @@ export function values<T = any>(customStore = defaultGetStore()): Promise<T[]> {
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-export function entries<T = any>(
+export function entries<KeyType extends IDBValidKey, ValueType = any>(
   customStore = defaultGetStore(),
-): Promise<[IDBValidKey, T][]> {
-  const items: [IDBValidKey, T][] = [];
+): Promise<[KeyType, ValueType][]> {
+  const items: [KeyType, ValueType][] = [];
 
   return eachCursor(customStore, (cursor) =>
-    items.push([cursor.key, cursor.value]),
+    items.push([cursor.key as KeyType, cursor.value]),
   ).then(() => items);
 }
