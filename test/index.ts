@@ -14,6 +14,7 @@ import {
   update,
   getMany,
 } from '../src';
+import { assert as typeAssert, IsExact } from 'conditional-type-checks';
 
 const { assert } = chai;
 mocha.setup('tdd');
@@ -226,6 +227,19 @@ mocha.setup('tdd');
       await set('hello', 'world', customStore);
       assert.deepEqual(await keys(customStore), [123, 'hello'], `Got keys`);
     });
+
+    test('types', async () => {
+      {
+        const result = await keys();
+        typeAssert<IsExact<typeof result, IDBValidKey[]>>(true);
+      }
+      {
+        const result = await keys<number>();
+        typeAssert<IsExact<typeof result, number[]>>(true);
+      }
+      // @ts-expect-error
+      keys<HTMLImageElement>();
+    });
   });
 
   suite('values', () => {
@@ -251,6 +265,17 @@ mocha.setup('tdd');
         ['456', 'world'],
         `Got values`,
       );
+    });
+
+    test('types', async () => {
+      {
+        const result = await values();
+        typeAssert<IsExact<typeof result, any[]>>(true);
+      }
+      {
+        const result = await values<number>();
+        typeAssert<IsExact<typeof result, number[]>>(true);
+      }
     });
   });
 
@@ -282,6 +307,19 @@ mocha.setup('tdd');
         ],
         `Got entries`,
       );
+    });
+
+    test('types', async () => {
+      {
+        const result = await entries();
+        typeAssert<IsExact<typeof result, [IDBValidKey, any][]>>(true);
+      }
+      {
+        const result = await entries<number, string>();
+        typeAssert<IsExact<typeof result, [number, string][]>>(true);
+      }
+      // @ts-expect-error
+      entries<HTMLImageElement, string>();
     });
   });
 
@@ -379,6 +417,17 @@ mocha.setup('tdd');
         ['ok', undefined],
         `Got values`,
       );
+    });
+
+    test('types', async () => {
+      {
+        const result = await getMany([1, 2, 3]);
+        typeAssert<IsExact<typeof result, any[]>>(true);
+      }
+      {
+        const result = await getMany<number>([1, 2, 3]);
+        typeAssert<IsExact<typeof result, number[]>>(true);
+      }
     });
   });
 
