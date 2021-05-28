@@ -9,6 +9,8 @@
       "require": "./dist/cjs/index.js",
       "import": "./dist/esm/index.js"
     },
+    "./dist/iife-compat/index-min.js": "./dist/iife-compat/index-min.js",
+    "./dist/iife/index-min.js": "./dist/iife/index-min.js",
     "./dist/*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
