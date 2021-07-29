@@ -2,6 +2,12 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var safariFix = require('safari-14-idb-fix');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var safariFix__default = /*#__PURE__*/_interopDefaultLegacy(safariFix);
+
 function promisifyRequest(request) {
     return new Promise((resolve, reject) => {
         // @ts-ignore - file size hacks
@@ -11,9 +17,11 @@ function promisifyRequest(request) {
     });
 }
 function createStore(dbName, storeName) {
-    const request = indexedDB.open(dbName);
-    request.onupgradeneeded = () => request.result.createObjectStore(storeName);
-    const dbp = promisifyRequest(request);
+    const dbp = safariFix__default['default']().then(() => {
+        const request = indexedDB.open(dbName);
+        request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+        return promisifyRequest(request);
+    });
     return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 }
 let defaultGetStoreFunc;

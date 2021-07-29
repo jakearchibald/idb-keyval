@@ -1,3 +1,5 @@
+import safariFix from 'safari-14-idb-fix';
+
 function promisifyRequest(request) {
     return new Promise((resolve, reject) => {
         // @ts-ignore - file size hacks
@@ -7,9 +9,11 @@ function promisifyRequest(request) {
     });
 }
 function createStore(dbName, storeName) {
-    const request = indexedDB.open(dbName);
-    request.onupgradeneeded = () => request.result.createObjectStore(storeName);
-    const dbp = promisifyRequest(request);
+    const dbp = safariFix().then(() => {
+        const request = indexedDB.open(dbName);
+        request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+        return promisifyRequest(request);
+    });
     return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 }
 let defaultGetStoreFunc;

@@ -1,8 +1,20 @@
 'use strict';
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var safariFix = require('dist/cjs-compat/index.js');
+
+function _interopDefaultLegacy(e) {
+  return e && _typeof(e) === 'object' && 'default' in e ? e : {
+    'default': e
+  };
+}
+
+var safariFix__default = /*#__PURE__*/_interopDefaultLegacy(safariFix);
 
 function promisifyRequest(request) {
   return new Promise(function (resolve, reject) {
@@ -19,13 +31,15 @@ function promisifyRequest(request) {
 }
 
 function createStore(dbName, storeName) {
-  var request = indexedDB.open(dbName);
+  var dbp = safariFix__default['default']().then(function () {
+    var request = indexedDB.open(dbName);
 
-  request.onupgradeneeded = function () {
-    return request.result.createObjectStore(storeName);
-  };
+    request.onupgradeneeded = function () {
+      return request.result.createObjectStore(storeName);
+    };
 
-  var dbp = promisifyRequest(request);
+    return promisifyRequest(request);
+  });
   return function (txMode, callback) {
     return dbp.then(function (db) {
       return callback(db.transaction(storeName, txMode).objectStore(storeName));

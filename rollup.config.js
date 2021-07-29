@@ -84,7 +84,8 @@ export default async function ({ watch }) {
     // Main builds
     {
       input: 'src/index.ts',
-      plugins: [simpleTS('src')],
+      plugins: [simpleTS('src'), commonjs(), resolve()],
+      external: ['safari-14-idb-fix'],
       output: [
         {
           file: 'dist/esm/index.js',
@@ -94,6 +95,12 @@ export default async function ({ watch }) {
           file: 'dist/cjs/index.js',
           format: 'cjs',
         },
+      ],
+    },
+    {
+      input: 'src/index.ts',
+      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
+      output: [
         {
           file: 'dist/iife/index-min.js',
           format: 'iife',
@@ -112,20 +119,55 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
+        if (id === 'dist/esm-compat/index.js') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
-      plugins: [simpleTS('src', { noBuild: true })],
+      plugins: [
+        {
+          resolveId(id) {
+            if (id === 'safari-14-idb-fix') return 'dist/esm-compat/index.js';
+          },
+        },
+        simpleTS('src', { noBuild: true }),
+        commonjs(),
+        resolve(),
+      ],
       output: [
         {
           file: 'dist/esm-compat/index.js',
           format: 'es',
           plugins: [getBabelPlugin()],
         },
+      ],
+    },
+    {
+      input: 'src/index.ts',
+      external: (id) => {
+        if (id === 'dist/cjs-compat/index.js') return true;
+        if (id.startsWith('@babel/runtime')) return true;
+      },
+      plugins: [
+        {
+          resolveId(id) {
+            if (id === 'safari-14-idb-fix') return 'dist/cjs-compat/index.js';
+          },
+        },
+        simpleTS('src', { noBuild: true }),
+        commonjs(),
+        resolve(),
+      ],
+      output: [
         {
           file: 'dist/cjs-compat/index.js',
           format: 'cjs',
           plugins: [getBabelPlugin()],
         },
+      ],
+    },
+    {
+      input: 'src/index.ts',
+      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
+      output: [
         {
           file: 'dist/iife-compat/index-min.js',
           format: 'iife',
@@ -149,6 +191,8 @@ export default async function ({ watch }) {
           terser({
             compress: { ecma: 2020 },
           }),
+          commonjs(),
+          resolve(),
         ],
         output: [
           {

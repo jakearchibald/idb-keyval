@@ -1,3 +1,5 @@
+import safariFix from 'dist/esm-compat/index.js';
+
 function promisifyRequest(request) {
   return new Promise(function (resolve, reject) {
     // @ts-ignore - file size hacks
@@ -13,13 +15,15 @@ function promisifyRequest(request) {
 }
 
 function createStore(dbName, storeName) {
-  var request = indexedDB.open(dbName);
+  var dbp = safariFix().then(function () {
+    var request = indexedDB.open(dbName);
 
-  request.onupgradeneeded = function () {
-    return request.result.createObjectStore(storeName);
-  };
+    request.onupgradeneeded = function () {
+      return request.result.createObjectStore(storeName);
+    };
 
-  var dbp = promisifyRequest(request);
+    return promisifyRequest(request);
+  });
   return function (txMode, callback) {
     return dbp.then(function (db) {
       return callback(db.transaction(storeName, txMode).objectStore(storeName));
