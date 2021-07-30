@@ -119,13 +119,15 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
-        if (id === 'dist/esm-compat/index.js') return true;
+        if (id === 'safari-14-idb-fix/dist/esm-compat') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
       plugins: [
         {
           resolveId(id) {
-            if (id === 'safari-14-idb-fix') return 'dist/esm-compat/index.js';
+            if (id === 'safari-14-idb-fix') {
+              return this.resolve('safari-14-idb-fix/dist/esm-compat');
+            }
           },
         },
         simpleTS('src', { noBuild: true }),
@@ -143,13 +145,15 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
-        if (id === 'dist/cjs-compat/index.js') return true;
+        if (id === 'safari-14-idb-fix/dist/cjs-compat') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
       plugins: [
         {
           resolveId(id) {
-            if (id === 'safari-14-idb-fix') return 'dist/cjs-compat/index.js';
+            if (id === 'safari-14-idb-fix') {
+              return this.resolve('safari-14-idb-fix/dist/cjs-compat');
+            }
           },
         },
         simpleTS('src', { noBuild: true }),

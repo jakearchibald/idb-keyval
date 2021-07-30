@@ -1,4 +1,4 @@
-import safariFix from 'dist/esm-compat/index.js';
+import safariFix from 'safari-14-idb-fix/dist/esm-compat';
 
 function promisifyRequest(request) {
   return new Promise(function (resolve, reject) {

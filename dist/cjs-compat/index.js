@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var safariFix = require('dist/cjs-compat/index.js');
+var safariFix = require('safari-14-idb-fix/dist/cjs-compat');
 
 function _interopDefaultLegacy(e) {
   return e && _typeof(e) === 'object' && 'default' in e ? e : {
