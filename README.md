@@ -43,16 +43,13 @@ import { get, set } from 'idb-keyval/dist/esm-compat';
 - `dist/iife/index-min.js` Minified plain JS, which creates an `idbKeyval` global containing all methods.
 - `dist/iife-compat/index-min.js` As above, but transpiled for older browsers.
 
-These built versions are also available on jsDelivr, e.g.:
+These built versions are also available on unpkg, e.g.:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js"></script>
+<script src="https://unpkg.com/idb-keyval@5/dist/iife/index-min.js"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
-  import {
-    get,
-    set,
-  } from 'https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/esm/index.js';
+  import { get, set } from 'https://unpkg.com/idb-keyval@5?module';
 </script>
 ```
 
