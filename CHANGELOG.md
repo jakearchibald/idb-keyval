@@ -2,9 +2,11 @@ This only documents breaking changes. For other changes, see the commit log.
 
 # v6
 
-- `dist` no longer commited.
+- `dist` no longer committed.
+- Files have moved around.
 - CommonJS files now have a `.cjs` extension.
 - Sourcemaps no longer included.
+- iife build switched to a UMD build.
 
 # v5
 
