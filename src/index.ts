@@ -149,6 +149,22 @@ export function del(
 }
 
 /**
+ * Delete multiple keys at once.
+ *
+ * @param keys List of keys to delete.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+export function delMany(
+  keys: IDBValidKey[],
+  customStore = defaultGetStore(),
+): Promise<void> {
+  return customStore('readwrite', (store: IDBObjectStore) => {
+    keys.forEach((key: IDBValidKey) => store.delete(key));
+    return promisifyRequest(store.transaction);
+  });
+}
+
+/**
  * Clear all values in the store.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
