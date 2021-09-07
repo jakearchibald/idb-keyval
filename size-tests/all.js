@@ -9,5 +9,5 @@ import {
   setMany,
   update,
   getMany,
-} from '../dist/esm/index.js';
+} from '../dist';
 a(get, set, del, clear, keys, values, entries, setMany, update, getMany);

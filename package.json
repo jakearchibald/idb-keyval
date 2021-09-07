@@ -2,29 +2,26 @@
   "name": "idb-keyval",
   "version": "5.1.5",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
-  "main": "./dist/cjs-compat/index.cjs",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/compat.cjs",
+  "module": "./dist/compat.js",
+  "unpkg": "./dist/iife-compat.js",
   "exports": {
     ".": {
-      "require": "./dist/cjs/index.cjs",
-      "import": "./dist/esm/index.js"
+      "module": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.cjs"
     },
-    "./dist/cjs": "./dist/cjs/index.cjs",
-    "./dist/cjs-compat": "./dist/cjs-compat/index.cjs",
-    "./dist/esm": "./dist/esm/index.js",
-    "./dist/esm-compat": "./dist/esm-compat/index.js",
-    "./dist/iife": "./dist/iife/index-min.js",
-    "./dist/iife-compat": "./dist/iife-compat/index-min.js",
+    "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
   "files": [
     "dist/**"
   ],
   "type": "module",
-  "types": "./dist/esm/index.d.ts",
+  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "rollup -c && node --experimental-modules lib/size-report.mjs",
+    "build": "rollup -c && node lib/size-report.js",
     "dev": "rollup -cw & serve",
     "prepack": "npm run build"
   },
