@@ -497,7 +497,7 @@ mocha.setup('tdd');
       assert.deepEqual(
         await getMany(['foo', 123, 'hello']),
         [undefined, undefined, undefined],
-        `Values appear to be deleted`,
+        `Keys have been deleted`,
       );
     });
 
@@ -513,7 +513,7 @@ mocha.setup('tdd');
       assert.deepEqual(
         await getMany(['foo', 123, 'hello']),
         [undefined, undefined, 'world'],
-        `Values appear to be deleted`,
+        `Selected keys appear to have been deleted`,
       );
     });
 
