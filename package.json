@@ -12,6 +12,9 @@
     "./dist/*": "./dist/*/index.js",
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist/**"
+  ],
   "types": "./dist/esm/index.d.ts",
   "sideEffects": false,
   "scripts": {
