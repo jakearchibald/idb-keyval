@@ -166,6 +166,26 @@ import { del } from 'idb-keyval';
 del('hello');
 ```
 
+### delMany:
+
+Delete many keys at once. This is faster than calling `del` multiple times.
+
+```js
+import { del, delMany } from 'idb-keyval';
+
+// Instead of:
+Promise.all([del(123), del('hello')])
+  .then(() => console.log('It worked!'))
+  .catch((err) => console.log('It failed!', err));
+
+// It's faster to do:
+delMany([
+  123, 'hello'
+])
+  .then(() => console.log('It worked!'))
+  .catch((err) => console.log('It failed!', err));
+```
+
 ### clear:
 
 Clear all values in the store.

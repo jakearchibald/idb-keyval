@@ -13,6 +13,7 @@ import {
   setMany,
   update,
   getMany,
+  delMany
 } from '../src';
 import { assert as typeAssert, IsExact } from 'conditional-type-checks';
 
@@ -477,6 +478,75 @@ mocha.setup('tdd');
         await get('count', customStore),
         2,
         'Custom store count',
+      );
+    });
+  });
+
+  suite('delMany', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+        ['hello', 'world'],
+      ]);
+
+      await delMany(['foo', 123, 'hello']);
+
+      assert.deepEqual(
+        await getMany(['foo', 123, 'hello']),
+        [undefined, undefined, undefined],
+        `Keys have been deleted`,
+      );
+    });
+
+    test('delete selected keys', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+        ['hello', 'world'],
+      ]);
+
+      await delMany(['foo', 123, 'does-not-exist']);
+
+      assert.deepEqual(
+        await getMany(['foo', 123, 'hello']),
+        [undefined, undefined, 'world'],
+        `Selected keys appear to have been deleted`,
+      );
+    });
+
+    test('custom store', async () => {
+      await setMany([
+        ['foo', 'bar'],
+        [123, '456'],
+      ]);
+      await setMany(
+        [
+          ['hello', 'world'],
+          [456, '789'],
+          [1122, '3344']
+        ],
+        customStore,
+      );
+
+      await delMany(['hello', 456], customStore)
+
+      assert.deepEqual(
+        await entries(),
+        [
+          [123, '456'],
+          ['foo', 'bar'],
+        ],
+        `Still got entries`,
+      );
+      assert.deepEqual(
+        await entries(customStore),
+        [
+          [1122, '3344']
+        ],
+        `Selected custom store keys have been deleted`,
       );
     });
   });
