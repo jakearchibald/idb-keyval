@@ -92,7 +92,7 @@ export default async function ({ watch }) {
           format: 'es',
         },
         {
-          file: 'dist/cjs/index.js',
+          file: 'dist/cjs/index.cjs',
           format: 'cjs',
         },
       ],
@@ -162,7 +162,7 @@ export default async function ({ watch }) {
       ],
       output: [
         {
-          file: 'dist/cjs-compat/index.js',
+          file: 'dist/cjs-compat/index.cjs',
           format: 'cjs',
           plugins: [getBabelPlugin()],
         },

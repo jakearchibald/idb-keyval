@@ -36,20 +36,20 @@ import { get, set } from 'idb-keyval/dist/esm-compat';
 
 ### All bundles
 
-- `dist/cjs/index.js` CommonJS module.
-- `dist/cjs-compat/index.js` CommonJS module, transpiled for older browsers.
-- `dist/esm/index.js` EcmaScript module.
-- `dist/esm-compat/index.js` EcmaScript module, transpiled for older browsers.
-- `dist/iife/index-min.js` Minified plain JS, which creates an `idbKeyval` global containing all methods.
-- `dist/iife-compat/index-min.js` As above, but transpiled for older browsers.
+- `idb-keyval/dist/cjs` CommonJS module.
+- `idb-keyval/dist/cjs-compat` CommonJS module, transpiled for older browsers.
+- `idb-keyval/dist/esm` EcmaScript module.
+- `idb-keyval/dist/esm-compat` EcmaScript module, transpiled for older browsers.
+- `idb-keyval/dist/iife` Minified plain JS, which creates an `idbKeyval` global containing all methods.
+- `idb-keyval/dist/iife-compat` As above, but transpiled for older browsers.
 
 These built versions are also available on jsDelivr, e.g.:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/iife/index-min.js"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
-  import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@5/+esm';
+  import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm';
 </script>
 ```
 
