@@ -6,11 +6,11 @@
     "moduleResolution": "node",
     "outDir": ".ts-tmp",
     "composite": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "baseUrl": "./",
     "rootDir": "./",
     "noUnusedLocals": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "alwaysStrict": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true

@@ -36,20 +36,24 @@ import { get, set } from 'idb-keyval/dist/esm-compat';
 
 ### All bundles
 
-- `dist/cjs/index.js` CommonJS module.
-- `dist/cjs-compat/index.js` CommonJS module, transpiled for older browsers.
-- `dist/esm/index.js` EcmaScript module.
-- `dist/esm-compat/index.js` EcmaScript module, transpiled for older browsers.
-- `dist/iife/index-min.js` Minified plain JS, which creates an `idbKeyval` global containing all methods.
-- `dist/iife-compat/index-min.js` As above, but transpiled for older browsers.
+A well-behaved bundler should automatically pick the ES module or the CJS module depending on what it supports, but if you need to force it either way:
+
+- `idb-keyval/dist/index.js` EcmaScript module.
+- `idb-keyval/dist/index.cjs` CommonJS module.
+
+Legacy builds:
+
+- `idb-keyval/dist/compat.js` EcmaScript module, transpiled for older browsers.
+- `idb-keyval/dist/compat.cjs` CommonJS module, transpiled for older browsers.
+- `idb-keyval/dist/umd.cjs` UMD module, also transpiled for older browsers.
 
 These built versions are also available on jsDelivr, e.g.:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.cjs"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
-  import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@5/+esm';
+  import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm';
 </script>
 ```
 
@@ -232,53 +236,3 @@ values().then((values) => console.log(values));
 ### Custom stores:
 
 By default, the methods above use an IndexedDB database named `keyval-store` and an object store named `keyval`. If you want to use something different, see [custom stores](./custom-stores.md).
-
-## Updating
-
-### Updating from 3.x
-
-The changes between 3.x and 5.x related to custom stores.
-
-(4.x was abandoned due to a Safari bug)
-
-Old way:
-
-```js
-// This no longer works in 4.x
-import { Store, set } from 'idb-keyval';
-
-const customStore = new Store('custom-db-name', 'custom-store-name');
-set('foo', 'bar', customStore);
-```
-
-New way:
-
-```js
-import { createStore, set } from 'idb-keyval';
-
-const customStore = createStore('custom-db-name', 'custom-store-name');
-set('foo', 'bar', customStore);
-```
-
-For more details, see [custom stores](./custom-stores.md).
-
-### Updating from 2.x
-
-2.x exported an object with methods:
-
-```js
-// This no longer works in 3.x
-import idbKeyval from 'idb-keyval';
-
-idbKeyval.set('foo', 'bar');
-```
-
-Whereas in 3.x you import the methods directly:
-
-```js
-import { set } from 'idb-keyval';
-
-set('foo', 'bar');
-```
-
-This is better for minification, and allows tree shaking.

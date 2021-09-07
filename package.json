@@ -2,21 +2,28 @@
   "name": "idb-keyval",
   "version": "5.1.5",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
-  "main": "./dist/cjs-compat/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/compat.cjs",
+  "module": "./dist/compat.js",
+  "unpkg": "./dist/iife-compat.js",
   "exports": {
     ".": {
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js"
+      "module": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.cjs"
     },
-    "./dist/*": "./dist/*/index.js",
+    "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
-  "types": "./dist/esm/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "rollup -c && node --experimental-modules lib/size-report.mjs",
-    "dev": "rollup -cw & serve"
+    "build": "rollup -c && node lib/size-report.js",
+    "dev": "rollup -cw & serve",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -71,6 +78,6 @@
     "*.{js,css,md,ts,html}": "prettier --write"
   },
   "dependencies": {
-    "safari-14-idb-fix": "^1.0.6"
+    "safari-14-idb-fix": "^2.0.2"
   }
 }

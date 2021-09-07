@@ -1,4 +1,4 @@
 node_modules
 .ts-tmp
-dist/test
-dist/size-tests
+dist
+tmp

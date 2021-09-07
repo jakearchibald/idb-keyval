@@ -11,12 +11,14 @@ import glob from 'glob';
 
 const globP = promisify(glob);
 
-function removeDefs() {
+function addRedirectDeclaration(fileName) {
   return {
-    generateBundle(_, bundle) {
-      for (const key of Object.keys(bundle)) {
-        if (key.includes('.d.ts')) delete bundle[key];
-      }
+    renderStart(_, bundle) {
+      this.emitFile({
+        type: 'asset',
+        source: `export * from './';`,
+        fileName,
+      });
     },
   };
 }
@@ -88,30 +90,12 @@ export default async function ({ watch }) {
       external: ['safari-14-idb-fix'],
       output: [
         {
-          file: 'dist/esm/index.js',
+          file: 'dist/index.js',
           format: 'es',
         },
         {
-          file: 'dist/cjs/index.js',
+          file: 'dist/index.cjs',
           format: 'cjs',
-        },
-      ],
-    },
-    {
-      input: 'src/index.ts',
-      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
-      output: [
-        {
-          file: 'dist/iife/index-min.js',
-          format: 'iife',
-          name: 'idbKeyval',
-          esModule: false,
-          plugins: [
-            terser({
-              compress: { ecma: 2020 },
-            }),
-            removeDefs(),
-          ],
         },
       ],
     },
@@ -136,9 +120,9 @@ export default async function ({ watch }) {
       ],
       output: [
         {
-          file: 'dist/esm-compat/index.js',
+          file: 'dist/compat.js',
           format: 'es',
-          plugins: [getBabelPlugin()],
+          plugins: [getBabelPlugin(), addRedirectDeclaration('compat.d.ts')],
         },
       ],
     },
@@ -162,7 +146,7 @@ export default async function ({ watch }) {
       ],
       output: [
         {
-          file: 'dist/cjs-compat/index.js',
+          file: 'dist/compat.cjs',
           format: 'cjs',
           plugins: [getBabelPlugin()],
         },
@@ -173,16 +157,15 @@ export default async function ({ watch }) {
       plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
       output: [
         {
-          file: 'dist/iife-compat/index-min.js',
-          format: 'iife',
+          file: 'dist/umd.cjs',
+          format: 'umd',
           name: 'idbKeyval',
-          esModule: false,
           plugins: [
+            addRedirectDeclaration('umd.d.ts'),
             getBabelPlugin(),
             terser({
               compress: { ecma: 5 },
             }),
-            removeDefs(),
           ],
         },
       ],
@@ -200,7 +183,7 @@ export default async function ({ watch }) {
         ],
         output: [
           {
-            file: `dist/size-tests/${basename(path)}`,
+            file: `tmp/size-tests/${basename(path)}`,
             format: 'es',
           },
         ],

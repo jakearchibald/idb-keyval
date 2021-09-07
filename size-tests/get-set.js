@@ -1,2 +1,2 @@
-import { get, set } from '../dist/esm/index.js';
+import { get, set } from '../dist';
 a(get, set);
