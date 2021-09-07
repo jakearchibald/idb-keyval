@@ -60,7 +60,7 @@
     "rollup": "^2.56.3",
     "rollup-plugin-terser": "^7.0.2",
     "serve": "^12.0.0",
-    "typescript": "^4.4.2"
+    "typescript": "4.3.5"
   },
   "husky": {
     "hooks": {
