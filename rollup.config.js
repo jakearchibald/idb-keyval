@@ -13,7 +13,7 @@ const globP = promisify(glob);
 
 function addRedirectDeclaration(fileName) {
   return {
-    renderStart(_, bundle) {
+    renderStart() {
       this.emitFile({
         type: 'asset',
         source: `export * from './';`,
@@ -103,21 +103,10 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
-        if (id === 'safari-14-idb-fix/dist/esm-compat') return true;
+        if (id === 'safari-14-idb-fix') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
-      plugins: [
-        {
-          resolveId(id) {
-            if (id === 'safari-14-idb-fix') {
-              return this.resolve('safari-14-idb-fix/dist/esm-compat');
-            }
-          },
-        },
-        simpleTS('src', { noBuild: true }),
-        commonjs(),
-        resolve(),
-      ],
+      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
       output: [
         {
           file: 'dist/compat.js',
@@ -129,21 +118,10 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
-        if (id === 'safari-14-idb-fix/dist/cjs-compat') return true;
+        if (id === 'safari-14-idb-fix') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
-      plugins: [
-        {
-          resolveId(id) {
-            if (id === 'safari-14-idb-fix') {
-              return this.resolve('safari-14-idb-fix/dist/cjs-compat');
-            }
-          },
-        },
-        simpleTS('src', { noBuild: true }),
-        commonjs(),
-        resolve(),
-      ],
+      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
       output: [
         {
           file: 'dist/compat.cjs',

@@ -78,6 +78,6 @@
     "*.{js,css,md,ts,html}": "prettier --write"
   },
   "dependencies": {
-    "safari-14-idb-fix": "^2.0.2"
+    "safari-14-idb-fix": "^3.0.0"
   }
 }
