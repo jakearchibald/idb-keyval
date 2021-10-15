@@ -135,7 +135,7 @@ export default async function ({ watch }) {
       plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
       output: [
         {
-          file: 'dist/umd.cjs',
+          file: 'dist/umd.js',
           format: 'umd',
           name: 'idbKeyval',
           plugins: [
