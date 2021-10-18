@@ -144,6 +144,18 @@ export default async function ({ watch }) {
             terser({
               compress: { ecma: 5 },
             }),
+            {
+              // jsDelivr does not serve the correct mimetype for .cjs files.
+              // However, the cjs version is retained for backwards compatibility.
+              // TODO: Remove this in the next major version.
+              generateBundle(_, bundle) {
+                this.emitFile({
+                  type: 'asset',
+                  fileName: 'umd.cjs',
+                  source: bundle['umd.js'].code,
+                });
+              },
+            },
           ],
         },
       ],
