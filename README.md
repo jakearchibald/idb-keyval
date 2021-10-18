@@ -45,12 +45,12 @@ Legacy builds:
 
 - `idb-keyval/dist/compat.js` EcmaScript module, transpiled for older browsers.
 - `idb-keyval/dist/compat.cjs` CommonJS module, transpiled for older browsers.
-- `idb-keyval/dist/umd.cjs` UMD module, also transpiled for older browsers.
+- `idb-keyval/dist/umd.js` UMD module, also transpiled for older browsers.
 
 These built versions are also available on jsDelivr, e.g.:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.cjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
 <!-- Or in modern browsers: -->
 <script type="module">
   import { get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm';
