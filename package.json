@@ -1,6 +1,6 @@
 {
   "name": "idb-keyval",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "A super-simple-small keyval store built on top of IndexedDB",
   "main": "./dist/compat.cjs",
   "module": "./dist/compat.js",
