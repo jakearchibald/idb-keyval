@@ -177,19 +177,15 @@ export function clear(customStore = defaultGetStore()): Promise<void> {
 }
 
 function eachCursor(
-  customStore: UseStore,
+  store: IDBObjectStore,
   callback: (cursor: IDBCursorWithValue) => void,
 ): Promise<void> {
-  return customStore('readonly', (store) => {
-    // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
-    // And openKeyCursor isn't supported by Safari.
-    store.openCursor().onsuccess = function () {
-      if (!this.result) return;
-      callback(this.result);
-      this.result.continue();
-    };
-    return promisifyRequest(store.transaction);
-  });
+  store.openCursor().onsuccess = function () {
+    if (!this.result) return;
+    callback(this.result);
+    this.result.continue();
+  };
+  return promisifyRequest(store.transaction);
 }
 
 /**
@@ -200,11 +196,20 @@ function eachCursor(
 export function keys<KeyType extends IDBValidKey>(
   customStore = defaultGetStore(),
 ): Promise<KeyType[]> {
-  const items: KeyType[] = [];
+  return customStore('readonly', (store) => {
+    // Fast path for modern browsers
+    if (store.getAllKeys) {
+      return promisifyRequest(
+        store.getAllKeys() as unknown as IDBRequest<KeyType[]>,
+      );
+    }
 
-  return eachCursor(customStore, (cursor) =>
-    items.push(cursor.key as KeyType),
-  ).then(() => items);
+    const items: KeyType[] = [];
+
+    return eachCursor(store, (cursor) =>
+      items.push(cursor.key as KeyType),
+    ).then(() => items);
+  });
 }
 
 /**
@@ -213,11 +218,18 @@ export function keys<KeyType extends IDBValidKey>(
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 export function values<T = any>(customStore = defaultGetStore()): Promise<T[]> {
-  const items: T[] = [];
+  return customStore('readonly', (store) => {
+    // Fast path for modern browsers
+    if (store.getAll) {
+      return promisifyRequest(store.getAll() as IDBRequest<T[]>);
+    }
 
-  return eachCursor(customStore, (cursor) => items.push(cursor.value)).then(
-    () => items,
-  );
+    const items: T[] = [];
+
+    return eachCursor(store, (cursor) => items.push(cursor.value as T)).then(
+      () => items,
+    );
+  });
 }
 
 /**
@@ -228,9 +240,24 @@ export function values<T = any>(customStore = defaultGetStore()): Promise<T[]> {
 export function entries<KeyType extends IDBValidKey, ValueType = any>(
   customStore = defaultGetStore(),
 ): Promise<[KeyType, ValueType][]> {
-  const items: [KeyType, ValueType][] = [];
+  return customStore('readonly', (store) => {
+    // Fast path for modern browsers
+    // (although, hopefully we'll get a simpler path some day)
+    if (store.getAll && store.getAllKeys) {
+      return Promise.all([
+        promisifyRequest(
+          store.getAllKeys() as unknown as IDBRequest<KeyType[]>,
+        ),
+        promisifyRequest(store.getAll() as IDBRequest<ValueType[]>),
+      ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]));
+    }
 
-  return eachCursor(customStore, (cursor) =>
-    items.push([cursor.key as KeyType, cursor.value]),
-  ).then(() => items);
+    const items: [KeyType, ValueType][] = [];
+
+    return customStore('readonly', (store) =>
+      eachCursor(store, (cursor) =>
+        items.push([cursor.key as KeyType, cursor.value]),
+      ).then(() => items),
+    );
+  });
 }

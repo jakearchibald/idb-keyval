@@ -4,7 +4,7 @@
 
 This is a super-simple promise-based keyval store implemented with IndexedDB, originally based on [async-storage by Mozilla](https://github.com/mozilla-b2g/gaia/blob/master/shared/js/async_storage.js).
 
-It's small and tree-shakeable. If you only use get/set, the library is ~370 bytes (brotli'd), if you use all methods it's ~570 bytes.
+It's small and tree-shakeable. If you only use get/set, the library is ~370 bytes (brotli'd), if you use all methods it's ~650 bytes.
 
 Although this is tiny, it's a little larger than previous versions due to a [massive bug in Safari](https://bugs.webkit.org/show_bug.cgi?id=226547). Hopefully this fix can be removed in the not-too-distant future, when a version of Safari without the bug reaches enough users.
 
