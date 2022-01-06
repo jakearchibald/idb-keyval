@@ -164,7 +164,7 @@ This will queue the updates automatically, so the first `update` set the `counte
 
 Update with an extra parameter sent to callback function.  Pass the extra parameter after the function argument.
 ```
-upsert('counter',(val,xtra_val) => (val || 0) + xtra_val),extraValueSentToCallback);
+upsert('counter',(val,xtra_val) => (val || 0) + xtra_val,extraValueSentToCallback);
 ```
 
 To upsert into an existing object in the cache, use a function such as:
