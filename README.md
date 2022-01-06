@@ -170,7 +170,7 @@ upsert('counter',(val,xtra_val) => (val || 0) + xtra_val),extraValueSentToCallba
 To upsert into an existing object in the cache, use a function such as:
 ```
 var upsertF = (v,mxObj)=>(Object.assign({},(v || {}),mxObj));
-upsert('counter',upsertF,someMixinObject);
+upsert('counter_obj',upsertF,someMixinObject);
 
 ```
 
