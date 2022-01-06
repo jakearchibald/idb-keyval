@@ -160,6 +160,12 @@ update('counter', (val) => (val || 0) + 1);
 
 This will queue the updates automatically, so the first `update` set the `counter` to `1`, and the second `update` sets it to `2`.
 
+### upsert:
+
+Update with an extra parameter sent to callback function.  Pass the extra parameter after the function argument.
+
+upsert('counter',(val,xtra_val) => (val || 0) + xtra_val),extraValueSentToCallback);
+
 ### del:
 
 Delete a particular key from the store.
