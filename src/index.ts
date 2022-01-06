@@ -165,7 +165,6 @@ export function upsert<T = any>(
   );
 }
 
-
 /**
  * Delete a particular key from the store.
  *
