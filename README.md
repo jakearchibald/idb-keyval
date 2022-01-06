@@ -171,7 +171,6 @@ To upsert into an existing object in the cache, use a function such as:
 ```
 var upsertF = (v,mxObj)=>(Object.assign({},(v || {}),mxObj));
 upsert('counter_obj',upsertF,someMixinObject);
-
 ```
 
 ### del:
