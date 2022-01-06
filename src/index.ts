@@ -133,6 +133,40 @@ export function update<T = any>(
 }
 
 /**
+ * Update a value with a parameter. This lets you see the old value and update it as an atomic operation.
+ *
+ * @param key
+ * @param updater A callback that takes the old value and returns a new value.
+ * @param updater_xp An extra parameter to callback function
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+export function upsert<T = any>(
+  key: IDBValidKey,
+  updater: (oldValue: T | undefined) => T,
+  updater_xp: any,
+  customStore = defaultGetStore(),
+): Promise<void> {
+  return customStore(
+    'readwrite',
+    (store) =>
+      // Need to create the promise manually.
+      // If I try to chain promises, the transaction closes in browsers
+      // that use a promise polyfill (IE10/11).
+      new Promise((resolve, reject) => {
+        store.get(key).onsuccess = function () {
+          try {
+            store.put(updater(this.result,updater_xp), key);
+            resolve(promisifyRequest(store.transaction));
+          } catch (err) {
+            reject(err);
+          }
+        };
+      }),
+  );
+}
+
+
+/**
  * Delete a particular key from the store.
  *
  * @param key
