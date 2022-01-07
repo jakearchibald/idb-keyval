@@ -136,9 +136,9 @@ export function update<T = any>(
  * Update a value with a parameter. This lets you see the old value and update it as an atomic operation.
  *
  * @param key
- * @param updater A callback that takes the old value and returns a new value.
- * @param updater_xp An extra parameter to callback function
- * @param customStore Method to get a custom store. Use with caution (see the docs).
+ * @param updater  A callback that takes the old value and returns a new value.
+ * @param updater_xp  An extra parameter to callback function
+ * @param customStore  Method to get a custom store. Use with caution (see the docs).
  */
 export function upsert<T = any>(
   key: IDBValidKey,
