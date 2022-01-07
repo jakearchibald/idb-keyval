@@ -460,7 +460,7 @@ mocha.setup('tdd');
         );
       }
     });
-
+    
     test('custom store', async () => {
       const increment: (old: number | undefined) => number = (old) =>
         (old || 0) + 1;
@@ -482,6 +482,57 @@ mocha.setup('tdd');
     });
   });
 
+  suite('upsert', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('basics', async () => {
+      const increment: (old: number | undefined,one: number | undefined) => number = (old,one) =>
+        (old || 0) + (one || 1);
+
+      await Promise.all([
+        update('count', increment, 2),
+        update('count', increment, 2),
+        update('count', increment, 2),
+      ]);
+
+      assert.strictEqual(await get('count'), 6, 'Count');
+    });
+
+    test('error types', async () => {
+      try {
+        await update('count', () => document);
+        assert.fail('Expected throw');
+      } catch (err) {
+        assert.strictEqual(
+          (err as DOMException).name,
+          'DataCloneError',
+          'Error is correct type',
+        );
+      }
+    });
+    
+    test('custom store', async () => {
+      const increment: (old: number | undefined) => number = (old) =>
+        (old || 0) + 1;
+
+      await Promise.all([
+        update('count', increment, 2),
+        update('count', increment, 2),
+        update('count', increment, 2),
+        update('count', increment, 2, customStore),
+        update('count', increment, 2, customStore),
+      ]);
+
+      assert.strictEqual(await get('count'), 6, 'Count');
+      assert.strictEqual(
+        await get('count', customStore),
+        4,
+        'Custom store count',
+      );
+    });
+  });
+
+  
   suite('delMany', () => {
     setup(() => Promise.all([clear(), clear(customStore)]));
 
