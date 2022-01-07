@@ -532,7 +532,6 @@ mocha.setup('tdd');
     });
   });
 
-  
   suite('delMany', () => {
     setup(() => Promise.all([clear(), clear(customStore)]));
 
