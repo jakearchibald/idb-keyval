@@ -11,12 +11,30 @@ export function promisifyRequest<T = undefined>(
   });
 }
 
+function createDbWithStore(
+  dbName: string,
+  storeName: string,
+  version?: number,
+) {
+  const request = indexedDB.open(dbName, version);
+  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+  return promisifyRequest(request);
+}
+
 export function createStore(dbName: string, storeName: string): UseStore {
-  const dbp = safariFix().then(() => {
-    const request = indexedDB.open(dbName);
-    request.onupgradeneeded = () => request.result.createObjectStore(storeName);
-    return promisifyRequest(request);
-  });
+  const dbp = safariFix()
+    .then(() => createDbWithStore(dbName, storeName))
+    .then((db) => {
+      if (db.objectStoreNames.contains(storeName)) {
+        return db;
+      }
+
+      // Sometimes, the DB gets into a weird state when the DB exists but the object store doesn’t.
+      // (See eg https://github.com/jakearchibald/idb-keyval/issues/134.)
+      // We’re handling this by upgrading the DB and creating the store.
+      db.close();
+      return createDbWithStore(dbName, storeName, db.version + 1);
+    });
 
   return (txMode, callback) =>
     dbp.then((db) =>
