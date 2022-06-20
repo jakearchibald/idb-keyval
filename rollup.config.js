@@ -34,7 +34,7 @@ function getBabelPlugin() {
 
 export default async function ({ watch }) {
   const devBuild = watch;
-  await del('dist');
+  await del('.ts-tmp', 'dist');
 
   if (devBuild)
     return {
