@@ -1,5 +1,3 @@
-import safariFix from 'safari-14-idb-fix';
-
 export function promisifyRequest<T = undefined>(
   request: IDBRequest<T> | IDBTransaction,
 ): Promise<T> {
@@ -12,11 +10,9 @@ export function promisifyRequest<T = undefined>(
 }
 
 export function createStore(dbName: string, storeName: string): UseStore {
-  const dbp = safariFix().then(() => {
-    const request = indexedDB.open(dbName);
-    request.onupgradeneeded = () => request.result.createObjectStore(storeName);
-    return promisifyRequest(request);
-  });
+  const request = indexedDB.open(dbName);
+  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+  const dbp = promisifyRequest(request);
 
   return (txMode, callback) =>
     dbp.then((db) =>

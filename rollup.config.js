@@ -87,7 +87,6 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       plugins: [simpleTS('src'), commonjs(), resolve()],
-      external: ['safari-14-idb-fix'],
       output: [
         {
           file: 'dist/index.js',
@@ -103,7 +102,6 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
-        if (id === 'safari-14-idb-fix') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
       plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
@@ -118,7 +116,6 @@ export default async function ({ watch }) {
     {
       input: 'src/index.ts',
       external: (id) => {
-        if (id === 'safari-14-idb-fix') return true;
         if (id.startsWith('@babel/runtime')) return true;
       },
       plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
