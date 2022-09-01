@@ -77,8 +77,5 @@
   },
   "lint-staged": {
     "*.{js,css,md,ts,html}": "prettier --write"
-  },
-  "dependencies": {
-    "safari-14-idb-fix": "^3.0.0"
   }
 }
