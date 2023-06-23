@@ -13,7 +13,8 @@ import {
   setMany,
   update,
   getMany,
-  delMany
+  delMany,
+  UseStore
 } from '../src';
 import { assert as typeAssert, IsExact } from 'conditional-type-checks';
 
@@ -23,6 +24,11 @@ mocha.setup('tdd');
 (async () => {
   await promisifyRequest(indexedDB.deleteDatabase('keyval-store'));
   const customStore = createStore('custom-db', 'custom-kv');
+  const errorStore: UseStore = (txMode, callback) => customStore(txMode, (store) => {
+    const result = callback(store);
+    store.transaction.abort();
+    return result;
+  })
 
   suite('The basics', () => {
     test('get & set', async () => {
@@ -149,6 +155,28 @@ mocha.setup('tdd');
         assert.strictEqual(
           (err as DOMException).name,
           'DataError',
+          'Error is correct type',
+        );
+      }
+
+      try {
+        await get('foo', errorStore);
+        assert.fail('Expected throw');
+      } catch (err) {
+        assert.strictEqual(
+          (err as DOMException).name,
+          'AbortError',
+          'Error is correct type',
+        );
+      }
+
+      try {
+        await set('foo', 'bar', errorStore);
+        assert.fail('Expected throw');
+      } catch (err) {
+        assert.strictEqual(
+          (err as DOMException).name,
+          'AbortError',
           'Error is correct type',
         );
       }
