@@ -4,8 +4,9 @@ export function promisifyRequest<T = undefined>(
   return new Promise<T>((resolve, reject) => {
     // @ts-ignore - file size hacks
     request.oncomplete = request.onsuccess = () => resolve(request.result);
+    request.onerror = (e) => reject((e.target as IDBRequest<T> | IDBTransaction).error);
     // @ts-ignore - file size hacks
-    request.onabort = request.onerror = () => reject(request.error);
+    request.onabort = () => reject(request.error);
   });
 }
 
