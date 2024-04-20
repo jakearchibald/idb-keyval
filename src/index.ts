@@ -257,3 +257,11 @@ export function entries<KeyType extends IDBValidKey, ValueType = any>(
     );
   });
 }
+
+/**
+ * Attempts to delete the named database. If the database already exists and there are open connections that don't close in response to a versionchange event, the request will be blocked until all they close. If the request is successful request's result will be null.
+ * @param dbName Name of the database to be deleted
+ */
+export function deleteDatabase(dbName: string) {
+  return indexedDB.deleteDatabase(dbName)  
+}
