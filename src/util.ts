@@ -54,12 +54,14 @@ async function _openDatabase(
   }
 
   try {
+    // Basic way to check if the db is open.
     databases[dbName].transaction(storeName);
     resolve(databases[dbName]);
   } catch (err: any) {
+    // Log here on purpose.
     console.debug(
-      `Could not open an indexedDB transaction due to ${err.name} (${err.message}).`,
-      'Trying to reopen the connection...'
+      `Could not open a transaction on "${dbName}" due to ${err.name} (${err.message}). `
+        + 'Trying to reopen the connection...'
     );
     // Try re-open.
     delete databases[dbName];
