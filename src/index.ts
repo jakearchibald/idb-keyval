@@ -1,6 +1,4 @@
-import { openDatabase, promisifyDatabaseRequest } from './util';
-
-export const promisifyRequest = promisifyDatabaseRequest;
+import { openDatabase, promisifyRequest } from './util';
 
 export function createStore(dbName: string, storeName: string): UseStore {
   return (txMode, callback) =>

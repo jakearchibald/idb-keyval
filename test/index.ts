@@ -4,7 +4,6 @@ import {
   get,
   set,
   del,
-  promisifyRequest,
   clear,
   createStore,
   keys,
@@ -14,7 +13,8 @@ import {
   update,
   getMany,
   delMany
-} from '../src';
+} from '../src/index';
+import { closeDatabase, promisifyRequest } from '../src/util';
 import { assert as typeAssert, IsExact } from 'conditional-type-checks';
 
 const { assert } = chai;
@@ -548,6 +548,40 @@ mocha.setup('tdd');
         ],
         `Selected custom store keys have been deleted`,
       );
+    });
+  });
+
+  suite('Resilience', () => {
+    setup(() => Promise.all([clear(), clear(customStore)]));
+
+    test('Database connection recovery', async () => {
+      await set('foo', 'bar');
+      // Close the database just before getting a value. This is supposed to simulate
+      // an unexpected/platform closure of the database for whatever reason. The problem
+      // is present on iOS Safari, but not on Android Chrome/WebView and it's difficult
+      // to trigger/reproduce since it appears random.
+      closeDatabase('keyval-store');
+
+      let value;
+      try {
+        value = await get('foo');
+      } catch (_) {
+        assert.fail('A get(...) must not throw if the db connection has been closed.');
+      }
+
+      assert.strictEqual(value, 'bar', 'Could not get value');
+
+      closeDatabase('keyval-store');
+      try {
+        await setMany([
+          ['bar', 'baz'],
+          ['baz', 'cat'],
+        ]);
+      } catch (_) {
+        assert.fail('A setMany(...) must not throw if the db connection has been closed.');
+      }
+
+      assert.deepEqual(await keys(), ['bar', 'baz', 'foo'], 'Could not get all test keys');
     });
   });
 
