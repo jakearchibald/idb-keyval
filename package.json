@@ -15,6 +15,9 @@
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist/**"
+  ],
   "type": "module",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
