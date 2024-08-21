@@ -1,21 +1,8 @@
-export function promisifyRequest<T = undefined>(
-  request: IDBRequest<T> | IDBTransaction,
-): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    // @ts-ignore - file size hacks
-    request.oncomplete = request.onsuccess = () => resolve(request.result);
-    // @ts-ignore - file size hacks
-    request.onabort = request.onerror = () => reject(request.error);
-  });
-}
+import { openDatabase, promisifyRequest } from './util';
 
 export function createStore(dbName: string, storeName: string): UseStore {
-  const request = indexedDB.open(dbName);
-  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
-  const dbp = promisifyRequest(request);
-
   return (txMode, callback) =>
-    dbp.then((db) =>
+    openDatabase(dbName, storeName).then(db =>
       callback(db.transaction(storeName, txMode).objectStore(storeName)),
     );
 }
