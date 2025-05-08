@@ -10,12 +10,27 @@ export function promisifyRequest<T = undefined>(
 }
 
 export function createStore(dbName: string, storeName: string): UseStore {
-  const request = indexedDB.open(dbName);
-  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
-  const dbp = promisifyRequest(request);
+  let dbp: Promise<IDBDatabase> | undefined;
+
+  const getDB = () => {
+    if (dbp) return dbp;
+    const request = indexedDB.open(dbName);
+    request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+    dbp = promisifyRequest(request);
+
+    dbp.then(
+      (db) => {
+        // It seems like Safari sometimes likes to just close the connection.
+        // It's supposed to fire this event when that happens. Let's hope it does!
+        db.onclose = () => (dbp = undefined);
+      },
+      () => {},
+    );
+    return dbp;
+  };
 
   return (txMode, callback) =>
-    dbp.then((db) =>
+    getDB().then((db) =>
       callback(db.transaction(storeName, txMode).objectStore(storeName)),
     );
 }

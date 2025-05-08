@@ -4,7 +4,7 @@
 
 This is a super-simple promise-based keyval store implemented with IndexedDB, originally based on [async-storage by Mozilla](https://github.com/mozilla-b2g/gaia/blob/master/shared/js/async_storage.js).
 
-It's small and tree-shakeable. If you only use get/set, the library is ~250 bytes (brotli'd), if you use all methods it's ~534 bytes.
+It's small and tree-shakeable. If you only use get/set, the library is 295 bytes (brotli'd), if you use all methods it's 573 bytes.
 
 [localForage](https://github.com/localForage/localForage) offers similar functionality, but supports older browsers with broken/absent IDB implementations. Because of that, it's orders of magnitude bigger (~7k).
 
