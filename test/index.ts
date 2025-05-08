@@ -13,7 +13,7 @@ import {
   setMany,
   update,
   getMany,
-  delMany
+  delMany,
 } from '../src';
 import { assert as typeAssert, IsExact } from 'conditional-type-checks';
 
@@ -526,12 +526,12 @@ mocha.setup('tdd');
         [
           ['hello', 'world'],
           [456, '789'],
-          [1122, '3344']
+          [1122, '3344'],
         ],
         customStore,
       );
 
-      await delMany(['hello', 456], customStore)
+      await delMany(['hello', 456], customStore);
 
       assert.deepEqual(
         await entries(),
@@ -543,9 +543,7 @@ mocha.setup('tdd');
       );
       assert.deepEqual(
         await entries(customStore),
-        [
-          [1122, '3344']
-        ],
+        [[1122, '3344']],
         `Selected custom store keys have been deleted`,
       );
     });

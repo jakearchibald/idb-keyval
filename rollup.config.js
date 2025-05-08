@@ -1,12 +1,13 @@
 import { promises as fsp } from 'fs';
 import { basename } from 'path';
-import simpleTS from './lib/simple-ts.js';
-import {deleteAsync} from 'del';
+import { deleteAsync } from 'del';
 import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
-import {glob} from 'glob';
+import typescript from '@rollup/plugin-typescript';
+
+import { glob } from 'glob';
 
 function addRedirectDeclaration(fileName) {
   return {
@@ -37,7 +38,7 @@ export default async function ({ watch }) {
     return {
       input: 'test/index.ts',
       plugins: [
-        simpleTS('test', { watch }),
+        typescript({ cacheDir: '.ts-tmp', tsconfig: './test/tsconfig.json' }),
         commonjs(),
         // When testing IE10
         // babel({
@@ -72,18 +73,17 @@ export default async function ({ watch }) {
           format: 'es',
         },
       ],
-      watch: {
-        clearScreen: false,
-        // Don't watch the ts files. Instead we watch the output from the ts compiler.
-        exclude: ['**/*.ts', '**/*.tsx'],
-      },
     };
 
   return [
     // Main builds
     {
       input: 'src/index.ts',
-      plugins: [simpleTS('src'), commonjs(), resolve()],
+      plugins: [
+        typescript({ cacheDir: '.ts-tmp', tsconfig: 'src/tsconfig.json' }),
+        commonjs(),
+        resolve(),
+      ],
       output: [
         {
           file: 'dist/index.js',
@@ -101,7 +101,11 @@ export default async function ({ watch }) {
       external: (id) => {
         if (id.startsWith('@babel/runtime')) return true;
       },
-      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
+      plugins: [
+        typescript({ cacheDir: '.ts-tmp', tsconfig: 'src/tsconfig.json' }),
+        commonjs(),
+        resolve(),
+      ],
       output: [
         {
           file: 'dist/compat.js',
@@ -115,7 +119,11 @@ export default async function ({ watch }) {
       external: (id) => {
         if (id.startsWith('@babel/runtime')) return true;
       },
-      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
+      plugins: [
+        typescript({ cacheDir: '.ts-tmp', tsconfig: 'src/tsconfig.json' }),
+        commonjs(),
+        resolve(),
+      ],
       output: [
         {
           file: 'dist/compat.cjs',
@@ -126,7 +134,11 @@ export default async function ({ watch }) {
     },
     {
       input: 'src/index.ts',
-      plugins: [simpleTS('src', { noBuild: true }), commonjs(), resolve()],
+      plugins: [
+        typescript({ cacheDir: '.ts-tmp', tsconfig: 'src/tsconfig.json' }),
+        commonjs(),
+        resolve(),
+      ],
       output: [
         {
           file: 'dist/umd.js',

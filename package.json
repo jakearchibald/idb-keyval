@@ -55,6 +55,7 @@
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@types/chai": "^5.2.2",
     "@types/mocha": "^10.0.10",
     "chai": "^5.2.0",
@@ -68,6 +69,7 @@
     "prettier": "^3.5.3",
     "rollup": "^4.40.2",
     "serve": "^14.2.4",
+    "tslib": "^2.8.1",
     "typescript": "^5.8.3"
   },
   "husky": {

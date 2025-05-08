@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ESNext",
     "module": "esnext",
     "strict": true,
     "moduleResolution": "node",
-    "outDir": ".ts-tmp",
     "composite": true,
     "declarationMap": false,
     "baseUrl": "./",
