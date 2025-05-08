@@ -1,15 +1,12 @@
 import { promises as fsp } from 'fs';
 import { basename } from 'path';
-import { promisify } from 'util';
-import simpleTS from './lib/simple-ts';
-import del from 'del';
-import { terser } from 'rollup-plugin-terser';
+import simpleTS from './lib/simple-ts.js';
+import {deleteAsync} from 'del';
+import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import babel, { getBabelOutputPlugin } from '@rollup/plugin-babel';
-import glob from 'glob';
-
-const globP = promisify(glob);
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
+import {glob} from 'glob';
 
 function addRedirectDeclaration(fileName) {
   return {
@@ -34,7 +31,7 @@ function getBabelPlugin() {
 
 export default async function ({ watch }) {
   const devBuild = watch;
-  await del('.ts-tmp', 'dist');
+  await deleteAsync('.ts-tmp', 'dist');
 
   if (devBuild)
     return {
@@ -158,7 +155,7 @@ export default async function ({ watch }) {
       ],
     },
     // Size tests
-    ...(await globP('size-tests/*.js').then((paths) =>
+    ...(await glob('size-tests/*.js').then((paths) =>
       paths.map((path) => ({
         input: path,
         plugins: [

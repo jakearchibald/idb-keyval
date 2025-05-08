@@ -1,5 +1,5 @@
 import 'mocha/mocha';
-import chai from 'chai/chai';
+import * as chai from 'chai';
 import {
   get,
   set,
