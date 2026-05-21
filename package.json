@@ -4,7 +4,7 @@
   "description": "A super-simple-small keyval store built on top of IndexedDB",
   "main": "./dist/compat.cjs",
   "module": "./dist/compat.js",
-  "unpkg": "./dist/iife-compat.js",
+  "unpkg": "./dist/umd.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
