@@ -265,10 +265,8 @@ export function entries<KeyType extends IDBValidKey, ValueType = any>(
 
     const items: [KeyType, ValueType][] = [];
 
-    return customStore('readonly', (store) =>
-      eachCursor(store, (cursor) =>
-        items.push([cursor.key as KeyType, cursor.value]),
-      ).then(() => items),
-    );
+    return eachCursor(store, (cursor) =>
+      items.push([cursor.key as KeyType, cursor.value]),
+    ).then(() => items);
   });
 }
