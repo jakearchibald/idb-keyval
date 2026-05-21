@@ -6,7 +6,6 @@
     "moduleResolution": "node",
     "composite": true,
     "declarationMap": false,
-    "baseUrl": "./",
     "rootDir": "./",
     "noUnusedLocals": true,
     "sourceMap": false,

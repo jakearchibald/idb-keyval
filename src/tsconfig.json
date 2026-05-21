@@ -4,6 +4,7 @@
     "lib": ["esnext", "dom"],
     "tsBuildInfoFile": "../.ts-tmp/.src.tsbuildinfo",
     "declarationDir": "../dist",
+    "rootDir": "./",
     "composite": true
   }
 }
