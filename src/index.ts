@@ -131,7 +131,8 @@ export function update<T = any>(
       // If I try to chain promises, the transaction closes in browsers
       // that use a promise polyfill (IE10/11).
       new Promise((resolve, reject) => {
-        store.get(key).onsuccess = function () {
+        const req = store.get(key);
+        req.onsuccess = function () {
           try {
             store.put(updater(this.result), key);
             resolve(promisifyRequest(store.transaction));
@@ -139,6 +140,7 @@ export function update<T = any>(
             reject(err);
           }
         };
+        req.onerror = () => reject(req.error);
       }),
   );
 }
