@@ -427,7 +427,7 @@ mocha.setup('tdd');
       }
       {
         const result = await getMany<number>([1, 2, 3]);
-        typeAssert<IsExact<typeof result, number[]>>(true);
+        typeAssert<IsExact<typeof result, (number | undefined)[]>>(true);
       }
     });
   });

@@ -106,7 +106,7 @@ export function setMany(
 export function getMany<T = any>(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
-): Promise<T[]> {
+): Promise<(T | undefined)[]> {
   return customStore('readonly', (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
   );
@@ -171,8 +171,8 @@ export function delMany(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
 ): Promise<void> {
-  return customStore('readwrite', (store: IDBObjectStore) => {
-    keys.forEach((key: IDBValidKey) => store.delete(key));
+  return customStore('readwrite', (store) => {
+    keys.forEach((key) => store.delete(key));
     return promisifyRequest(store.transaction);
   });
 }
