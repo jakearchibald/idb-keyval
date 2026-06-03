@@ -171,8 +171,8 @@ export function delMany(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
 ): Promise<void> {
-  return customStore('readwrite', (store: IDBObjectStore) => {
-    keys.forEach((key: IDBValidKey) => store.delete(key));
+  return customStore('readwrite', (store) => {
+    keys.forEach((key) => store.delete(key));
     return promisifyRequest(store.transaction);
   });
 }
