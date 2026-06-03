@@ -106,7 +106,7 @@ export function setMany(
 export function getMany<T = any>(
   keys: IDBValidKey[],
   customStore = defaultGetStore(),
-): Promise<T[]> {
+): Promise<(T | undefined)[]> {
   return customStore('readonly', (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
   );
