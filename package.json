@@ -12,6 +12,18 @@
       "import": "./dist/index.js",
       "default": "./dist/index.cjs"
     },
+    "./compat": {
+      "types": "./dist/compat.d.ts",
+      "module": "./dist/compat.js",
+      "import": "./dist/compat.js",
+      "default": "./dist/compat.cjs"
+    },
+    "./umd": {
+      "types": "./dist/umd.d.ts",
+      "module": "./dist/umd.js",
+      "import": "./dist/umd.js",
+      "default": "./dist/umd.cjs"
+    },
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
