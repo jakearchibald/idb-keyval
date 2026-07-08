@@ -24,7 +24,9 @@ export function createStore(dbName: string, storeName: string): UseStore {
         // It's supposed to fire this event when that happens. Let's hope it does!
         db.onclose = () => (dbp = undefined);
       },
-      () => {},
+      () => {
+        dbp = undefined;
+      },
     );
     return dbp;
   };
@@ -134,7 +136,7 @@ export function update<T = any>(
         const req = store.get(key);
         req.onsuccess = function () {
           try {
-            store.put(updater(this.result), key);
+            store.put(updater(req.result), key);
             resolve(promisifyRequest(store.transaction));
           } catch (err) {
             reject(err);
