@@ -32,9 +32,11 @@ export function createStore(dbName: string, storeName: string): UseStore {
   };
 
   return (txMode, callback) =>
-    getDB().then((db) =>
-      callback(db.transaction(storeName, txMode).objectStore(storeName)),
-    );
+    Promise.resolve()
+      .then(getDB)
+      .then((db) =>
+        callback(db.transaction(storeName, txMode).objectStore(storeName)),
+      );
 }
 
 export type UseStore = <T>(
