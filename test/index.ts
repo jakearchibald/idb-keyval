@@ -17,12 +17,86 @@ import {
 } from '../src';
 import { assert as typeAssert, IsExact } from 'conditional-type-checks';
 
-const { assert } = chai;
+const assert: typeof chai.assert = chai.assert;
 mocha.setup('tdd');
 
 (async () => {
   await promisifyRequest(indexedDB.deleteDatabase('keyval-store'));
   const customStore = createStore('custom-db', 'custom-kv');
+
+  suite('Initialization failures', () => {
+    test('the default store rejects when IndexedDB is unavailable', async () => {
+      const descriptor = Object.getOwnPropertyDescriptor(
+        globalThis,
+        'indexedDB',
+      )!;
+      Object.defineProperty(globalThis, 'indexedDB', {
+        value: undefined,
+        configurable: true,
+      });
+      try {
+        let result: Promise<unknown> | undefined;
+        assert.doesNotThrow(() => {
+          result = get('missing');
+        });
+        assert.instanceOf(result, Promise);
+        let rejection: unknown;
+        try {
+          await result;
+        } catch (error) {
+          rejection = error;
+        }
+        assert.instanceOf(rejection, Error);
+      } finally {
+        Object.defineProperty(globalThis, 'indexedDB', descriptor);
+      }
+      await set('recovered', 'value');
+      assert.strictEqual(await get('recovered'), 'value');
+      await del('recovered');
+    });
+
+    test('store operations reject synchronous open failures and can retry', async () => {
+      const originalOpen = indexedDB.open;
+      const expectedError = new Error('Opening the database failed');
+      const store = createStore('initialization-retry-db', 'keyval');
+      const operations = [
+        () => get('key', store),
+        () => set('key', 'value', store),
+        () => del('key', store),
+        () => clear(store),
+        () => keys(store),
+        () => values(store),
+        () => entries(store),
+        () => setMany([['key', 'value']], store),
+        () => getMany(['key'], store),
+        () => delMany(['key'], store),
+        () => update('key', () => 'value', store),
+      ];
+      indexedDB.open = () => {
+        throw expectedError;
+      };
+      try {
+        for (const operation of operations) {
+          let result: Promise<unknown> | undefined;
+          assert.doesNotThrow(() => {
+            result = operation();
+          });
+          assert.instanceOf(result, Promise);
+          try {
+            await result;
+            assert.fail('Expected an initialization rejection');
+          } catch (error) {
+            assert.strictEqual(error, expectedError);
+          }
+        }
+      } finally {
+        indexedDB.open = originalOpen;
+      }
+      await set('key', 'value', store);
+      assert.strictEqual(await get('key', store), 'value');
+      await clear(store);
+    });
+  });
 
   suite('The basics', () => {
     test('get & set', async () => {
